@@ -1,0 +1,87 @@
+#song h2 {
+	color: black;
+	font-weight: bold;
+	font-family: arial;
+	font-size: 133%;
+}
+
+#song .author {
+	font-size: 80%;
+	font-weight: bold;
+	font-family: verdana;
+	margin-bottom: 20px;
+}
+
+#song span {
+	color: black;
+	font-family: verdana;
+}
+
+#song sup {
+	font-size: 0.6em;
+}
+
+#song sub {
+	font-size: 0.6em;
+}
+
+#song td {
+	padding-right: 20px;
+	border: 0px;
+	white-space: nowrap;
+	width: 1%;
+}
+
+#song td:last-child {
+	width: 100%
+}
+
+#song table {
+	border: 0px;
+	letter-spacing: 0;
+}
+
+.taxonomy-description {
+	padding: 0 110px;
+}
+
+.accordionHeader h4 {
+	font-family: 'Josefin Sans', sans-serif;
+	color: #ff6f26 !important;
+	border: 1px !important;
+	border-style: solid !important;
+	background-color: white !important;
+	border-color: #ff6f26 !important;
+}
+
+.accordionHeader h4:hover {
+	background-color: #ff6f26 !important;
+	color: white !important;
+	transition: all 0.3s;
+}
+
+.accordionWrapper {
+	margin-bottom: 4px;
+}
+
+.tabOpen h4 {
+	background-color: #ff6f26 !important;
+	color: white !important;
+}
+
+.accordionBody {
+	padding: 0 10px;
+	margin-top: 0px;
+	border: 1px !important;
+	border-style: solid !important;
+	border-color: #ff6f26 !important;
+	border-top: 0px !important;
+}
+
+.widget-button {
+	color: #ff6f26 !important;
+}
+
+.widget-button:hover {
+	color: #333 !important;
+}
