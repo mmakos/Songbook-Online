@@ -29,6 +29,7 @@ category = {
 
 static_posts_id = {
     "historia-zmian": (41, "Historia zmian"),
+    "historia-zmian": (45, "Historia zmian"),
 }
 
 insert_post = "INSERT INTO ahsoka_posts " \
@@ -113,5 +114,17 @@ with open("sql/songbook.sql", "w", encoding="UTF-8") as sql_file, open("history/
         month = replace_date(int(datetime.datetime.now().strftime("%m")))
         contact_html = contact.read().replace("\n", "\\r\\n").replace("\"", "\\\"").replace("'", "\\'")\
                        % (VERSION, datetime.datetime.now().strftime(f"%d {month} %Y"))
-        sql_file.write("UPDATE ahsoka_posts SET post_modified = CURRENT_TIME(), post_modified_gmt = CURRENT_TIME(), post_content = '%s' WHERE ID = 45;"\
-                       % contact_html)
+        contact_changed = False
+        try:
+            with open(os.path.join("history/songbook-online/Dodatki/contact.html"), "r", encoding="UTF-8") as contact_file:
+                contact_changed = contact_html != contact_file.read()
+        except FileNotFoundError:
+            contact_changed = True
+
+        if contact_changed:
+            sql_file.write(
+                "UPDATE ahsoka_posts SET post_modified = CURRENT_TIME(), post_modified_gmt = CURRENT_TIME(), post_content = '%s' WHERE ID = 45;" \
+                % contact_html)
+            with open(os.path.join("history/songbook-online/Dodatki/contact.html"), "w", encoding="UTF-8") as contact_file:
+                contact_file.write(song_content)
+
