@@ -105,13 +105,9 @@ function setInputButton(isInMeeting) {
 
 function setSongQueue(songQueue) {
     let queueLabel = document.getElementById("meeting-queue")
-    if (queueLabel !== null && songQueue["queue"]) {
-        queueLabel.innerHTML = songQueue["queue"];
-    }
+    queueLabel.innerHTML = songQueue["queue"] ? songQueue["queue"] : "";
     let infoLabel = document.getElementById("meeting-information")
-    if (infoLabel !== null && songQueue['info']) {
-        infoLabel.innerHTML = songQueue['info'];
-    }
+    infoLabel.innerHTML = songQueue["info"] ? songQueue["info"] : "";
 }
 
 function setMeetingId(meetingId) {

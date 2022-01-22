@@ -680,7 +680,7 @@ add_action('wp_ajax_nopriv_get_meeting_songs', 'get_meeting_songs');
 
 function song_in_meeting_action() {
     $connection = get_database_connection();
-    
+
     if ($connection and isset($_COOKIE['meeting'])) {
         $meeting_id = $_COOKIE['meeting'];
         $url = wp_get_referer();
@@ -688,19 +688,19 @@ function song_in_meeting_action() {
 
         $sql = "";
         if ($_REQUEST['song-action'] == 'add') {
-            $time = microtime(true);
-            $sql = "INSERT INTO ahsoka_meeting_songs(meeting_id, song_id, add_date) VALUES ('$meeting_id', $song_id, $time)";
+            $time = DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''))->format("Y-m-d H:i:s.u");
+            $sql = "INSERT INTO ahsoka_meeting_songs(meeting_id, song_id, add_date) VALUES ('$meeting_id', $song_id, '$time')";
         } else if ($_REQUEST['song-action'] == 'remove') {
             $sql = "DELETE FROM ahsoka_meeting_songs WHERE meeting_id='$meeting_id' AND song_id=$song_id";
         }
 
         $result = mysqli_query($connection, $sql);
         if (!$result) {
-            echo "Nie udało się zmodyfikować kolejki w bazie danych.<br>";
+            json_encode(array("info" => "Nie udało się zmodyfikować kolejki w bazie danych."));
         }
         get_meeting_songs();
     } else {
-        echo "Nie udało się połączyć z bazą danych";
+        json_encode(array("info" => "Nie udało się połączyć z bazą danych."));
     }
 
     die();
@@ -709,14 +709,14 @@ add_action('wp_ajax_song_in_meeting_action', 'song_in_meeting_action');
 add_action('wp_ajax_nopriv_song_in_meeting_action', 'song_in_meeting_action');
 
 function order_meeting() {
-    $time = microtime(true);
     $connection = get_database_connection();
 
     if ($connection and isset($_COOKIE['meeting'])) {
         $meeting_id = $_COOKIE['meeting'];
         $song_list = $_REQUEST['song-order'];
         $sql = "";
-        
+
+        $time = microtime(true);
         foreach ($song_list as $song) {
             $song_ids = explode(':', $song);
             if (count($song_ids) > 1) {
