@@ -93,7 +93,9 @@ def get_songs(pars: list[Paragraph]) -> list[Song]:
             songs.append(song)
         elif len(songs) > 0:
             current_song = songs[-1]
-            text, chords = __get_paragraph_from_runs(par.runs, par.paragraph_format.left_indent)
+            ident = par.paragraph_format.left_indent \
+                if par.paragraph_format.left_indent is not None else par.paragraph_format.first_line_indent
+            text, chords = __get_paragraph_from_runs(par.runs, ident)
 
             current_song.text.extend(text)
             current_song.chords.extend([[c] for c in chords])
