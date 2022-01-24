@@ -3,7 +3,9 @@ import os
 
 from convert import VERSION
 from str_convert import replace_date
+from distutils.dir_util import copy_tree
 
+NO_BACKUP = True
 
 def get_title(song_html: str) -> str:
     start = song_html.find("<h2>") + 4
@@ -49,6 +51,9 @@ insert_relation = "INSERT INTO ahsoka_term_relationships" \
 
 if not os.path.exists("history"):
     os.mkdir("history")
+elif not NO_BACKUP:
+    copy_tree("history", f"backups/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
+
 try:
     song_ids = {line.split("=")[0]: int(line.split("=")[1]) for line in
                 open("history/song_ids", "r", encoding="UTF-8").readlines()}
@@ -126,5 +131,5 @@ with open("sql/songbook.sql", "w", encoding="UTF-8") as sql_file, open("history/
                 "UPDATE ahsoka_posts SET post_modified = CURRENT_TIME(), post_modified_gmt = CURRENT_TIME(), post_content = '%s' WHERE ID = 45;" \
                 % contact_html)
             with open(os.path.join("history/songbook-online/Dodatki/contact.html"), "w", encoding="UTF-8") as contact_file:
-                contact_file.write(song_content)
+                contact_file.write(contact_html)
 
