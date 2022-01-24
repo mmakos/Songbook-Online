@@ -113,7 +113,7 @@ def get_text_without_classes(string: str):
         end = result.find(">") + 1
         if begin == -1 or end == -1:
             result = re.sub(r'[0-9]+\.', '', result)
-            return result.replace("&nbsp;", "").replace("\n", " ").strip()
+            return result.replace("&nbsp;", "").replace("\n", " ").replace("&iuml;", "ï").replace("&oslash;", "ø").strip()
         result = result[:begin] + result[end:]
 
 

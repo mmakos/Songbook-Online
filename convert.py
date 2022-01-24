@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 
 from docx import Document
 from docx.text.paragraph import Paragraph
@@ -29,6 +30,9 @@ if __name__ == '__main__':
         shutil.rmtree("songbook-online")
     os.mkdir("songbook-online")
 
+    with open("templates/songsWithoutAuthor", "r", encoding="utf-8") as file:
+        songs_without_author = [line.strip() for line in file.readlines()]
+
     for section in sections:
         os.mkdir(f"songbook-online/{section}")
         if section == "Dodatki":
@@ -42,6 +46,8 @@ if __name__ == '__main__':
             add_authors(songs, get_authors(f"docx/Śpiewnik-{VERSION}.htm"))
 
             for song in songs:
+                if (song.authors is None or len(song.authors) == 0) and song.title not in songs_without_author:
+                    print(f"Brak autora w piosence: {song.title}", file=sys.stderr)
                 title = song.title.title()
                 filename = replace(''.join(x.lower() for x in "-".join(title.split(" ")) if x.isalpha() or x.isnumeric() or x == "-")).encode("ascii", "ignore").decode()
                 with open(f"songbook-online/{section}/{filename}.html", "w", encoding="utf-8") as file:
