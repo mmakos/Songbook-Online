@@ -32,7 +32,7 @@ class Song:
             if len(previous_text.strip()) > 0 or len(previous_chords.strip()) > 0 or len(t.strip()) > 0 or len(
                     c[0].strip()) > 0:
                 final_text.append(t.replace("\t", "&emsp;&emsp;"))
-                chords_split = c[0].split("\t")
+                chords_split = c[0].strip().split("\t")
                 split_chords = list()
                 for chord in chords_split:
                     split_chords.append(chord.replace("</i><i>", "").replace("</u><u>", "").replace("</sub><sub>", "") \
