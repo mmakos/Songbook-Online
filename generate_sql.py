@@ -5,7 +5,8 @@ from convert import VERSION
 from str_convert import replace_date
 from distutils.dir_util import copy_tree
 
-NO_BACKUP = True
+BACKUP = True
+
 
 def get_title(song_html: str) -> str:
     start = song_html.find("<h2>") + 4
@@ -51,7 +52,7 @@ insert_relation = "INSERT INTO ahsoka_term_relationships" \
 
 if not os.path.exists("history"):
     os.mkdir("history")
-elif not NO_BACKUP:
+elif BACKUP:
     copy_tree("history", f"backups/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
 
 try:

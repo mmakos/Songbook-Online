@@ -36,7 +36,8 @@ class Song:
                 split_chords = list()
                 for chord in chords_split:
                     split_chords.append(chord.replace("</i><i>", "").replace("</u><u>", "").replace("</sub><sub>", "") \
-                                        .replace("</sup><sup>", "").replace("</b><b>", "").replace("</b><b class=\"chord\">", ""))
+                                        .replace("</sup><sup>", "").replace("</b><b>", "").replace(
+                        "</b><b class=\"chord\">", ""))
 
                 if len(split_chords) > 0 and (split_chords[0].startswith("<b class=\"chord\">|") or
                                               split_chords[0].startswith("<i><b class=\"chord\">|")):
@@ -92,7 +93,7 @@ def get_songs(pars: list[Paragraph]) -> list[Song]:
             songs.append(song)
         elif len(songs) > 0:
             current_song = songs[-1]
-            text, chords = __get_paragraph_from_runs(par.runs)
+            text, chords = __get_paragraph_from_runs(par.runs, par.paragraph_format.left_indent)
 
             current_song.text.extend(text)
             current_song.chords.extend([[c] for c in chords])
@@ -173,7 +174,7 @@ def __get_line_begin_tabs(line: str) -> str:
     return tabs
 
 
-def __get_paragraph_from_runs(runs: list[Run]) -> tuple[list[str], list[str]]:
+def __get_paragraph_from_runs(runs: list[Run], ident) -> tuple[list[str], list[str]]:
     text: list[str] = list()
     chords: list[str] = list()
 
@@ -221,6 +222,11 @@ def __get_paragraph_from_runs(runs: list[Run]) -> tuple[list[str], list[str]]:
             text[-1] += __get_html_formatted_text(run)
         elif current_type == TextType.CHORD:
             chords[-1] += __get_html_formatted_text(run, True)
+
+    if ident is not None:
+        idents = int((ident / 265430.0) + 0.9)
+        for i, line in enumerate(text):
+            text[i] = "\t" * idents + line
 
     return text, chords
 
