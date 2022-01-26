@@ -5,7 +5,7 @@ from convert import VERSION
 from str_convert import replace_date
 from distutils.dir_util import copy_tree
 
-BACKUP = True
+BACKUP = False
 
 
 def get_title(song_html: str) -> str:

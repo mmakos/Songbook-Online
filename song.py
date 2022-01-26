@@ -35,9 +35,13 @@ class Song:
                 chords_split = c[0].strip().split("\t")
                 split_chords = list()
                 for chord in chords_split:
-                    split_chords.append(chord.replace("</i><i>", "").replace("</u><u>", "").replace("</sub><sub>", "") \
-                                        .replace("</sup><sup>", "").replace("</b><b>", "").replace(
-                        "</b><b class=\"chord\">", ""))
+                    split_chords.append(chord.replace("</i><i>", "").replace("</i> <i>", " ")
+                                        .replace("</u><u>", "").replace("</u> <u>", " ")
+                                        .replace("</sub><sub>", "").replace("</sub> <sub>", " ")
+                                        .replace("</sup><sup>", "").replace("</sup> <sup>", " ")
+                                        .replace("</b><b>", "").replace("</b> <b>", " ")
+                                        .replace("</b><b class=\"chord\">", "").replace("</b> <b class=\"chord\">", " ")
+                                        )
 
                 if len(split_chords) > 0 and (split_chords[0].startswith("<b class=\"chord\">|") or
                                               split_chords[0].startswith("<i><b class=\"chord\">|")):
