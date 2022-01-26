@@ -43,7 +43,6 @@ function setFavouritesHTML() {
             'song-ids': favourites.join(",")
         },
         success: function(data) {
-            console.log(data);
             const html = JSON.parse(data)["favourites"];
             if (html.length > 0) {
                 $("#favourites-list").html(html);

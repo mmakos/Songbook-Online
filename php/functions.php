@@ -618,7 +618,7 @@ function get_database_connection() {
 
 function set_cookie_if_allowed($name, $value, $expire) {
     if ($_COOKIE['cookie_notice_accepted'] == 'true') {
-        setcookie($name, $value, $expire);
+        setcookie($name, $value, $expire, "/");
     }
 }
 
@@ -641,7 +641,7 @@ function join_meeting() {
                 'status' => 'failed'
             ));
         } else {
-            set_cookie_if_allowed('meeting', $meeting_id, time() + 86400, "/");
+            set_cookie_if_allowed('meeting', $meeting_id, time() + 86400);
             echo json_encode(array(
                 'status' => 'success',
                 'meeting_id' => $meeting_id
