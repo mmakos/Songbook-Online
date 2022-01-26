@@ -1,34 +1,56 @@
 jQuery(document).ready(function($) {
     setInputMeetingListener();
-    var meetingId = getCookie("meeting");
+    const meetingId = getCookie("meeting");
     setMeetingId(meetingId);
     setMeetingContent(meetingId !== null);
     setInputButton(meetingId !== null);
     setSongButtonsVisible(meetingId !== null, false);
     $("#meeting-error").hide();
 
-    $(".add-to-meeting").click(function() {
-        $.ajax({
-            url: ajaxurl,
-            data: {
-                'action':'song_in_meeting_action',
-                'song-action': 'add'
-            },
-            success: function(data) {
-                setSongQueue(JSON.parse(data));
-            }
-        });
-    });
+    // $(".add-to-meeting").click(function() {
+    //     $.ajax({
+    //         url: ajaxurl,
+    //         data: {
+    //             'action':'song_in_meeting_action',
+    //             'song-action': 'add'
+    //         },
+    //         success: function(data) {
+    //             setSongQueue(JSON.parse(data));
+    //         }
+    //     });
+    // });
+    //
+    // $(".remove-from-meeting").click(function() {
+    //     $.ajax({
+    //         url: ajaxurl,
+    //         data: {
+    //             'action':'song_in_meeting_action',
+    //             'song-action': 'remove'
+    //         },
+    //         success: function(data) {
+    //             setSongQueue(JSON.parse(data))
+    //         }
+    //     });
+    // });
 
-    $(".remove-from-meeting").click(function() {
+    $(".song-in-meeting").click(function() {
+        const songInMeeting = $(this).children(".meeting-star").hasClass("meeting-star-selected");
         $.ajax({
             url: ajaxurl,
             data: {
                 'action':'song_in_meeting_action',
-                'song-action': 'remove'
+                'song-action': songInMeeting ? 'remove' : 'add'
             },
             success: function(data) {
-                setSongQueue(JSON.parse(data))
+                const json = JSON.parse(data);
+                setSongQueue(json);
+                if (json.status === 'success') {
+                    if (songInMeeting) {
+                        $(this).children(".meeting-star").addClass("meeting-star-selected");
+                    } else {
+                        $(this).children(".meeting-star").removeClass("meeting-star-selected");
+                    }
+                }
             }
         });
     });
@@ -60,7 +82,7 @@ function joinMeeting() {
         },
         success: function(data) {
             let result = JSON.parse(data);
-            if (result["status"] == 'success') {
+            if (result["status"] === 'success') {
                 $("#meeting-error").hide(1000);
                 setMeetingContent($, true);
                 setInputButton(true);
@@ -140,9 +162,9 @@ function setInputMeetingListener() {
 
 // COOKIES
 function setCookie(name, value, hours) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
+    let expires = "";
+    if (hours) {
+        const date = new Date();
         date.setTime(date.getTime() + (hours*60*60*1000));
         expires = "; expires=" + date.toUTCString();
     }
@@ -150,11 +172,11 @@ function setCookie(name, value, hours) {
 }
 
 function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0)===' ') c = c.substring(1,c.length);
         if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
     }
     return null;

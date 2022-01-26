@@ -648,9 +648,13 @@ add_action('wp_ajax_join_meeting', 'join_meeting');
 add_action('wp_ajax_nopriv_join_meeting', 'join_meeting');
 
 function get_meeting_songs() {
+    get_meeting_songs_with_arguments();
+}
+
+function get_meeting_songs_with_arguments($addArgs=array()) {
     $connection = get_database_connection();
 
-    if ($connection and isset($_COOKIE['meeting'])) {
+    if ($connection && isset($_COOKIE['meeting'])) {
         $meeting_id = $_COOKIE['meeting'];
         $sql_select = "SELECT post_title, song_id, add_date FROM ahsoka_meeting_songs INNER JOIN ahsoka_posts WHERE meeting_id='$meeting_id' AND ahsoka_meeting_songs.song_id = ahsoka_posts.ID ORDER BY add_date";
         $select_result = mysqli_query($connection, $sql_select);
@@ -664,13 +668,13 @@ function get_meeting_songs() {
                     $url = "https://spiewnik.mmakos.pl/?p=" . $id;
                     $result = $result . '<a class="dropzone" draggable="true" href="' . $url . '" id="song:' . $id . '">' . $name . '</a>';
                 }
-                echo json_encode(array("queue" => $result));
+                echo json_encode(array_merge(array("queue" => $result), $addArgs));
             }
             else {
-                echo json_encode(array("info" => "Na tym spotkaniu nie ma żadnych piosenek w kolejce."));
+                echo json_encode(array_merge(array("info" => "Na tym spotkaniu nie ma żadnych piosenek w kolejce."), $addArgs));
             }
         } else {
-            json_encode(array("info" => "Nie udało się pobrać piosenek dla spotkania $meeting_id"));
+            echo json_encode(array_merge(array("info" => "Nie udało się pobrać piosenek dla spotkania $meeting_id"), $addArgs));
         }
     }
     die();
@@ -681,7 +685,7 @@ add_action('wp_ajax_nopriv_get_meeting_songs', 'get_meeting_songs');
 function song_in_meeting_action() {
     $connection = get_database_connection();
 
-    if ($connection and isset($_COOKIE['meeting'])) {
+    if ($connection && isset($_COOKIE['meeting'])) {
         $meeting_id = $_COOKIE['meeting'];
         $url = wp_get_referer();
         $song_id = url_to_postid( $url );
@@ -696,11 +700,12 @@ function song_in_meeting_action() {
 
         $result = mysqli_query($connection, $sql);
         if (!$result) {
-            json_encode(array("info" => "Nie udało się zmodyfikować kolejki w bazie danych."));
+            get_meeting_songs_with_arguments(array("info" => "Nie udało się zmodyfikować kolejki w bazie danych.", "status" => "failed"));
+        } else {
+            get_meeting_songs_with_arguments(array("status" => "success"));
         }
-        get_meeting_songs();
     } else {
-        json_encode(array("info" => "Nie udało się połączyć z bazą danych."));
+        echo json_encode(array("info" => "Nie udało się połączyć z bazą danych.", "status" => "failed"));
     }
 
     die();
@@ -711,7 +716,7 @@ add_action('wp_ajax_nopriv_song_in_meeting_action', 'song_in_meeting_action');
 function order_meeting() {
     $connection = get_database_connection();
 
-    if ($connection and isset($_COOKIE['meeting'])) {
+    if ($connection && isset($_COOKIE['meeting'])) {
         $meeting_id = $_COOKIE['meeting'];
         $song_list = $_REQUEST['song-order'];
         $sql = "";

@@ -68,12 +68,16 @@
 			<button onclick="transpose(-1)">-1</button>
 			<span id="current-trans"></span>
 		</div>
-		
-		<div class="song-queue">
-			<span>Spotkanie: </span>
-			<button class="add-to-meeting">Chcę zaśpiewać</button>
-			<button class="remove-from-meeting">Zaśpiewaliśmy</button>
-		</div>
+
+        <div class="song-options">
+            <button title="Chcę zaśpiewać" class="song-in-meeting"><?php include 'svg.php'; getSvg("star"); ?></button>
+            <button title="Dodaj do ulubionych" class="favourite-song"><?php getSvg("heart"); ?></button>
+        </div>
+<!--		<div class="song-queue">-->
+<!--			<span>Spotkanie: </span>-->
+<!--			<button class="add-to-meeting">Chcę zaśpiewać</button>-->
+<!--			<button class="remove-from-meeting">Zaśpiewaliśmy</button>-->
+<!--		</div>-->
 		<?php astrid_entry_footer(); ?>
 	</footer><!-- .entry-footer -->
 	<?php endif; ?>

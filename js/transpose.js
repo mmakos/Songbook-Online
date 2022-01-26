@@ -84,25 +84,25 @@ var downTranspositionDict = {
 	'cis': 'c'
 }
 
-var current_transposition = 0;
+let current_transposition = 0;
 
 function transpose(interval) {
 	current_transposition += interval;
-    var currentChords = document.getElementsByClassName("chord");
-    for (var cc in currentChords) {
-		var currentChordsHTML = currentChords[cc].innerHTML
-		if (currentChordsHTML === null) continue; 
-    	var chords = currentChordsHTML.split(/([ -@\[-`{-~])/gi);
-        for (var c in chords) {
-			var transpositionDict = interval > 0 ? upTranspositionDict : downTranspositionDict;
+	const currentChords = document.getElementsByClassName("chord");
+	for (const cc in currentChords) {
+		const currentChordsHTML = currentChords[cc].innerHTML;
+		if (currentChordsHTML === null || currentChordsHTML === undefined) continue;
+		const chords = currentChordsHTML.split(/([ -@\[-`{-~])/gi);
+		for (const c in chords) {
+			const transpositionDict = interval > 0 ? upTranspositionDict : downTranspositionDict;
 			if (chords[c] in transpositionDict){
 				chords[c] = transpositionDict[chords[c]];
 			}
         }
-        currentChords[cc].innerHTML = chords.join('')
+    	currentChords[cc].innerHTML = chords.join('')
     }
-	var current_trans = document.getElementById("current-trans");
-	var current_trans_string = '';
+	const current_trans = document.getElementById("current-trans");
+	let current_trans_string = '';
 	if (current_transposition < 0) {
 		current_trans_string = current_transposition;
 	} else if (current_transposition > 0) {
