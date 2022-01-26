@@ -630,7 +630,7 @@ function join_meeting() {
         $sql_select = "SELECT id FROM ahsoka_meetings WHERE id='$meeting_id'";
 
         $select_result = mysqli_query($connection, $sql_select);
-        if (!$select_result or $select_result->num_rows < 1) {
+        if (!$select_result || $select_result->num_rows < 1) {
             echo json_encode(array(
                 'status' => 'failed'
             ));
@@ -647,6 +647,22 @@ function join_meeting() {
 add_action('wp_ajax_join_meeting', 'join_meeting');
 add_action('wp_ajax_nopriv_join_meeting', 'join_meeting');
 
+function get_songs_with_ids() {
+    $ids = explode(",", $_REQUEST['song-ids']);
+    $result = "";
+    foreach ($ids as $song) {
+        $title = get_the_title($song);
+        if (strlen($title) > 0) {
+            $url = "https://spiewnik.mmakos.pl/?p=" . $song;
+            $result = $result . '<a href="' . $url . '">' . $title . '</a>';
+        }
+    }
+    echo json_encode(array("favourites" => $result));
+    die();
+}
+add_action('wp_ajax_get_songs_with_ids', 'get_songs_with_ids');
+add_action('wp_ajax_nopriv_get_songs_with_ids', 'get_songs_with_ids');
+
 function get_meeting_songs() {
     get_meeting_songs_with_arguments();
 }
@@ -661,14 +677,20 @@ function get_meeting_songs_with_arguments($addArgs=array()) {
         if ($select_result) {
             if ($select_result->num_rows > 0) {
                 $result = '';
-                
+
+                $isCurrentInMeeting = false;
+                $currentSong = url_to_postid( wp_get_referer() );
                 while ($row = mysqli_fetch_array($select_result)) {
                     $id = $row['song_id'];
                     $name = $row['post_title'];
                     $url = "https://spiewnik.mmakos.pl/?p=" . $id;
                     $result = $result . '<a class="dropzone" draggable="true" href="' . $url . '" id="song:' . $id . '">' . $name . '</a>';
+
+                    if ($currentSong == $id) {
+                        $isCurrentInMeeting = true;
+                    }
                 }
-                echo json_encode(array_merge(array("queue" => $result), $addArgs));
+                echo json_encode(array_merge(array("queue" => $result, "song-in-meeting" => $isCurrentInMeeting), $addArgs));
             }
             else {
                 echo json_encode(array_merge(array("info" => "Na tym spotkaniu nie ma żadnych piosenek w kolejce."), $addArgs));

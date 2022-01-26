@@ -7,34 +7,8 @@ jQuery(document).ready(function($) {
     setSongButtonsVisible(meetingId !== null, false);
     $("#meeting-error").hide();
 
-    // $(".add-to-meeting").click(function() {
-    //     $.ajax({
-    //         url: ajaxurl,
-    //         data: {
-    //             'action':'song_in_meeting_action',
-    //             'song-action': 'add'
-    //         },
-    //         success: function(data) {
-    //             setSongQueue(JSON.parse(data));
-    //         }
-    //     });
-    // });
-    //
-    // $(".remove-from-meeting").click(function() {
-    //     $.ajax({
-    //         url: ajaxurl,
-    //         data: {
-    //             'action':'song_in_meeting_action',
-    //             'song-action': 'remove'
-    //         },
-    //         success: function(data) {
-    //             setSongQueue(JSON.parse(data))
-    //         }
-    //     });
-    // });
-
     $(".song-in-meeting").click(function() {
-        const songInMeeting = $(this).children(".meeting-star").hasClass("meeting-star-selected");
+        const songInMeeting = $(".meeting-star").hasClass("meeting-star-selected");
         $.ajax({
             url: ajaxurl,
             data: {
@@ -46,20 +20,20 @@ jQuery(document).ready(function($) {
                 setSongQueue(json);
                 if (json.status === 'success') {
                     if (songInMeeting) {
-                        $(this).children(".meeting-star").addClass("meeting-star-selected");
+                        $(".meeting-star").removeClass("meeting-star-selected");
                     } else {
-                        $(this).children(".meeting-star").removeClass("meeting-star-selected");
+                        $(".meeting-star").addClass("meeting-star-selected");
                     }
                 }
             }
         });
     });
-    
+
     $("#meeting-submit").click(function() {
         if (getCookie("meeting") !== null) {
             leaveMeeting();
         } else {
-            joinMeeting();   
+            joinMeeting();
         }
     });
 });
@@ -73,7 +47,7 @@ function leaveMeeting() {
 
 function joinMeeting() {
     let meetingId = document.getElementById("meeting-id-input").value
-    
+
     $.ajax({
         url: ajaxurl,
         data: {
@@ -111,7 +85,11 @@ function setMeetingContent(isInMeeting) {
                 'action':'get_meeting_songs'
             },
             success: function(data) {
-                setSongQueue(JSON.parse(data));
+                const json = JSON.parse(data);
+                setSongQueue(json);
+                if (json["song-in-meeting"]) {
+                    $(".meeting-star").addClass("meeting-star-selected");
+                }
             }
         });
     }
@@ -158,30 +136,4 @@ function setInputMeetingListener() {
             $("#meeting-submit").click();
         }
     });
-}
-
-// COOKIES
-function setCookie(name, value, hours) {
-    let expires = "";
-    if (hours) {
-        const date = new Date();
-        date.setTime(date.getTime() + (hours*60*60*1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-}
-
-function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    for(let i=0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0)===' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
-function eraseCookie(name) {   
-    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
