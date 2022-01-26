@@ -616,8 +616,14 @@ function get_database_connection() {
     return mysqli_connect("localhost", "mmakos_ahsoka", "f5U-96p(S5", "mmakos_ahsoka");
 }
 
+function set_cookie_if_allowed($name, $value, $expire) {
+    if ($_COOKIE['cookie_notice_accepted'] == 'true') {
+        setcookie($name, $value, $expire);
+    }
+}
+
 function leave_meeting() {
-    setcookie("meeting", "", time() - 3600);
+    set_cookie_if_allowed("meeting", "", time() - 3600);
 }
 add_action('wp_ajax_leave_meeting', 'leave_meeting');
 add_action('wp_ajax_nopriv_leave_meeting', 'leave_meeting');
@@ -635,7 +641,7 @@ function join_meeting() {
                 'status' => 'failed'
             ));
         } else {
-            setcookie('meeting', $meeting_id, time() + 86400, "/");
+            set_cookie_if_allowed('meeting', $meeting_id, time() + 86400, "/");
             echo json_encode(array(
                 'status' => 'success',
                 'meeting_id' => $meeting_id
