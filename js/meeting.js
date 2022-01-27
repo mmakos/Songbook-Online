@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
     setInputMeetingListener();
     const meetingId = getCookie("meeting");
     setMeetingId(meetingId);
-    setMeetingContent(meetingId !== null);
+    setMeetingContent(meetingId !== null, true);
     setInputButton(meetingId !== null);
     setSongButtonsVisible(meetingId !== null, false);
     $("#meeting-error").hide();
@@ -40,7 +40,8 @@ jQuery(document).ready(function($) {
 
 function leaveMeeting() {
     eraseCookie("meeting");
-    setMeetingContent(null, false);
+    setMeetingId(null);
+    setMeetingContent(false);
     setInputButton(false);
     setSongButtonsVisible(false);
 }
@@ -58,7 +59,7 @@ function joinMeeting() {
             let result = JSON.parse(data);
             if (result["status"] === 'success') {
                 $("#meeting-error").hide(1000);
-                setMeetingContent($, true);
+                setMeetingContent(true);
                 setInputButton(true);
                 setSongButtonsVisible(true);
             } else {
@@ -68,17 +69,10 @@ function joinMeeting() {
     });
 }
 
-function setMeetingContent(isInMeeting) {
+function setMeetingContent(isInMeeting, siteStart=false) {
+    const slideTime = siteStart ? 0 : 400;
     if (isInMeeting) {
-        $("#meeting-queue").show();
-        $("#meeting-information").show();
-        $("#meeting-id-input").hide();
-    } else {
-        $("#meeting-queue").hide();
-        $("#meeting-information").hide();
-        $("#meeting-id-input").show();
-    }
-    if (isInMeeting) {
+        $("#meeting-id-input").slideUp(slideTime);
         $.ajax({
             url: ajaxurl,
             data: {
@@ -87,11 +81,17 @@ function setMeetingContent(isInMeeting) {
             success: function(data) {
                 const json = JSON.parse(data);
                 setSongQueue(json);
+                $("#meeting-queue").slideDown(slideTime);
+                $("#meeting-information").slideDown(slideTime);
                 if (json["song-in-meeting"]) {
                     $(".meeting-star").addClass("meeting-star-selected");
                 }
             }
         });
+    } else {
+        $("#meeting-queue").slideUp(slideTime);
+        $("#meeting-information").slideUp(slideTime);
+        $("#meeting-id-input").slideDown(slideTime);
     }
 }
 
