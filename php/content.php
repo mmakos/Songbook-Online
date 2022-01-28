@@ -23,8 +23,9 @@
 		if ( 'post' === get_post_type() && get_theme_mod('hide_meta') != 1 ) : ?>
 
         <div class="song-options" style="float: right">
-            <button title="Chcę zaśpiewać" class="song-in-meeting"><?php include 'svg.php'; getSvg("star"); ?></button>
-            <button title="Dodaj do ulubionych" class="favourite-song"><?php getSvg("heart"); ?></button>
+            <button title="Oddal tekst" class="svg-option-button zoom-song"><?php include 'svg.php'; getSvg("lupe"); ?></button>
+            <button title="Chcę zaśpiewać" class="svg-option-button song-in-meeting"><?php getSvg("star"); ?></button>
+            <button title="Dodaj do ulubionych" class="svg-option-button favourite-song"><?php getSvg("heart"); ?></button>
         </div>
         </div>
 		<div class="entry-meta">
@@ -47,7 +48,7 @@
 	<?php endif; ?>
 
 	<?php if ( is_single() ) : ?>
-	<div class="entry-content">
+	<div class="entry-content" id="song-outer">
 		<?php the_content(); ?>
 	</div>
 	<?php else : ?>
