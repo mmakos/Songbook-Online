@@ -50,6 +50,8 @@ if __name__ == '__main__':
                     print(f"Brak autora w piosence: {song.title}", file=sys.stderr)
                 title = song.title.title()
                 filename = replace(''.join(x.lower() for x in "-".join(title.split(" ")) if x.isalpha() or x.isnumeric() or x == "-")).encode("ascii", "ignore").decode()
+                if filename.isnumeric():
+                    filename = "a" + filename
                 with open(f"songbook-online/{section}/{filename}.html", "w", encoding="utf-8") as file:
                     if head:
                         file.write("<head><meta charset=\"UTF-8\">")
