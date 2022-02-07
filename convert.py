@@ -10,7 +10,7 @@ from str_convert import replace
 from song import get_songs, add_authors, get_authors
 
 head = True
-VERSION = "4.1.4"
+VERSION = "4.2.1"
 
 if __name__ == '__main__':
     doc = Document(f"docx/Śpiewnik-{VERSION}.docx")
