@@ -15,6 +15,15 @@ date_replacements = (
 )
 
 
+def title_to_unique_name(title: str) -> str:
+    filename = replace(
+        ''.join(x.lower() for x in "-".join(title.split(" ")) if x.isalpha() or x.isnumeric() or x == "-")).encode(
+        "ascii", "ignore").decode()
+    if filename.isnumeric():
+        filename = "a" + filename
+    return filename
+
+
 def replace(string):
     return ''.join(replacements.get(c, c) for c in string)
 

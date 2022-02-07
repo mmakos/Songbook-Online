@@ -32,7 +32,7 @@ category = {
 
 static_posts_id = {
     "historia-zmian": (41, "Historia zmian"),
-    "historia-zmian": (45, "Historia zmian"),
+    "contact": (45, "Kontakt"),
 }
 
 insert_post = "INSERT INTO ahsoka_posts " \

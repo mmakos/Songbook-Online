@@ -2,12 +2,12 @@ import os
 import shutil
 import sys
 
-from docx import Document
 from docx.text.paragraph import Paragraph
 
 from addons import get_addons
-from str_convert import replace
+from docx import Document
 from song import get_songs, add_authors, get_authors
+from str_convert import title_to_unique_name
 
 head = True
 VERSION = "4.2.1"
@@ -49,9 +49,7 @@ if __name__ == '__main__':
                 if (song.authors is None or len(song.authors) == 0) and song.title not in songs_without_author:
                     print(f"Brak autora w piosence: {song.title}", file=sys.stderr)
                 title = song.title.title()
-                filename = replace(''.join(x.lower() for x in "-".join(title.split(" ")) if x.isalpha() or x.isnumeric() or x == "-")).encode("ascii", "ignore").decode()
-                if filename.isnumeric():
-                    filename = "a" + filename
+                filename = title_to_unique_name(title)
                 with open(f"songbook-online/{section}/{filename}.html", "w", encoding="utf-8") as file:
                     if head:
                         file.write("<head><meta charset=\"UTF-8\">")
