@@ -1,24 +1,4 @@
-var upTranspositionDict = {
-    'C': 'Cis',
-    'Cis': 'D',
-    'Des': 'D',
-    'D': 'Dis',
-    'Es': 'E',
-    'Dis': 'E',
-    'E': 'F',
-    'Fes': 'F',
-    'F': 'Fis',
-    'Eis': 'Fis',
-    'Fis': 'G',
-    'Ges': 'G',
-    'G': 'Gis',
-    'As': 'A',
-    'Gis': 'A',
-    'A': 'B',
-    'B': 'H',
-    'Ais': 'H',
-    'H': 'C',
-    'Ces': 'C',
+const upTranspositionDict = {
     'c': 'cis',
     'cis': 'd',
     'des': 'd',
@@ -31,6 +11,7 @@ var upTranspositionDict = {
     'eis': 'fis',
     'fis': 'g',
     'ges': 'g',
+	'fisis': 'gis',
     'g': 'gis',
     'as': 'a',
     'gis': 'a',
@@ -38,31 +19,13 @@ var upTranspositionDict = {
     'b': 'h',
     'ais': 'h',
     'h': 'c',
-    'ces': 'c'
+	'ces': 'c',
+	'his': 'cis'
 }
 
-var downTranspositionDict = {
-	'C': 'H',
-	'H': 'B',
-	'Ces': 'B',
-	'B': 'A',
-	'Ais': 'A',
-	'A': 'As',
-	'As': 'G',
-	'Gis': 'G',
-	'G': 'Ges',
-	'Fis': 'F',
-	'Ges': 'F',
-	'F': 'E',
-	'Eis': 'E',
-	'E': 'Es',
-	'Fes': 'Es',
-	'Es': 'D',
-	'Dis': 'D',
-	'D': 'Des',
-	'Des': 'C',
-	'Cis': 'C',
+const downTranspositionDict = {
 	'c': 'h',
+	'his': 'h',
 	'h': 'b',
 	'ces': 'b',
 	'b': 'a',
@@ -71,6 +34,7 @@ var downTranspositionDict = {
 	'as': 'g',
 	'gis': 'g',
 	'g': 'ges',
+	'fisis': 'fis',
 	'fis': 'f',
 	'ges': 'f',
 	'f': 'e',
@@ -95,8 +59,12 @@ function transpose(interval) {
 		const chords = currentChordsHTML.split(/([ -@\[-`{-~])/gi);
 		for (const c in chords) {
 			const transpositionDict = interval > 0 ? upTranspositionDict : downTranspositionDict;
-			if (chords[c] in transpositionDict){
-				chords[c] = transpositionDict[chords[c]];
+			if (chords[c].toLowerCase() in transpositionDict){
+				const isDur = chords[c].length > 0 && /[A-H]/.test(chords[c].charAt(0));
+				chords[c] = transpositionDict[chords[c].toLowerCase()];
+				if (isDur) {
+					chords[c] = chords[c].charAt(0).toUpperCase() + chords[c].slice(1);
+				}
 			}
         }
     	currentChords[cc].innerHTML = chords.join('')
