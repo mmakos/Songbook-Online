@@ -65,8 +65,6 @@ except (FileNotFoundError, ValueError):
 
 with open("sql/songbook.sql", "w", encoding="UTF-8") as sql_file, open("history/song_ids", "w",
                                                                        encoding="UTF-8") as map_file:
-    # sql_file.write("DELETE FROM ahsoka_posts WHERE ID >= 1000 AND ID < 10000\n\n")
-    # sql_file.write("DELETE FROM ahsoka_term_relationships WHERE object_id >= 1000 AND object_id < 10000\n\n\n\n")
 
     for song_cat in os.listdir("songbook-online"):
         for song in os.listdir(os.path.join("songbook-online", song_cat)):

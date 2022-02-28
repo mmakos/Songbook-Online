@@ -16,6 +16,7 @@ def get_addons(pars: list[Paragraph]):
         elif history and par.style.name != "Heading 2" and "Tabela chwyt" not in par.text:
             paragraphs.append(par)
     hist_html = __get_history_html(paragraphs)
+    hist_html = __reverse_history(hist_html)
 
     return {"historia-zmian": hist_html.replace("\n", "\\r\\n").replace("\"", "\\\"").replace("'", "\\'")}
 
@@ -50,7 +51,7 @@ def __get_html_formatted_text(run: Run) -> str:
            run.text[stripped_pos + len(stripped):]
 
 
-def __get_history_html(pars):
+def __get_history_html(pars) -> str:
     html = str()
     ids = __get_ids()
     for par in pars:
@@ -85,3 +86,16 @@ def __get_text_href(text: str, song_ids_dict: dict):
         if song_ids_dict.get(title, 0) > 0:
             return f"""<a href="/?p={song_ids_dict[title]}">{text}</a>"""
     return text
+
+
+def __reverse_history(history: str):
+    result: list[str] = list()
+    current_result: list[str] = list()
+    for line in reversed(history.split("<br>")):
+        current_result.append(line)
+        if line.startswith("<u>"):
+            current_result.reverse()
+            result.extend(current_result)
+            current_result.clear()
+    return "<br>".join(result)
+

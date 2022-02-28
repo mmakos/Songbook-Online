@@ -21,5 +21,11 @@ function getSvg($svgName)
     <line class="zoom-in-plus-vline" stroke="none" x1="250" y1="70" x2="250" y2="230" />
     <line x1="330" y1="150" x2="170" y2="150" />
 </svg>';
+    } elseif ($svgName == "error") {
+        echo '<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="svg-click-icon error-exclamation">
+    <circle cx="200" cy="200" r="180"/>
+    <line x1="200" y1="80" x2="200" y2="250" />
+    <circle cx="200" cy="310" r="8"/>
+</svg>';
     }
 }

@@ -1,0 +1,5 @@
+<svg style="stroke: red; stroke-width: 30; fill: none; stroke-linecap: round" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="svg-click-icon meeting-star">
+    <circle cx="200" cy="200" r="160"/>
+    <line x1="200" y1="85" x2="200" y2="240" />
+    <line stroke-width="45" x1="200" y1="300" x2="200" y2="305" />
+</svg>

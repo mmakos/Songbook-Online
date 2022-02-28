@@ -24,6 +24,7 @@
 
         <div class="song-options" style="float: right">
             <button title="Oddal tekst" class="svg-option-button zoom-song"><?php include 'svg.php'; getSvg("lupe"); ?></button>
+            <button title="Zgłoś błąd" class="svg-option-button report-error" onclick="location.href='/kontakt/zglos-blad/?song=<?php get_the_ID(); ?>'"><?php getSvg("error"); ?></button>
             <button title="Chcę zaśpiewać" class="svg-option-button song-in-meeting"><?php getSvg("star"); ?></button>
             <button title="Dodaj do ulubionych" class="svg-option-button favourite-song"><?php getSvg("heart"); ?></button>
         </div>

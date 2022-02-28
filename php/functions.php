@@ -769,3 +769,14 @@ function order_meeting() {
 }
 add_action('wp_ajax_order_meeting', 'order_meeting');
 add_action('wp_ajax_nopriv_order_meeting', 'order_meeting');
+
+function get_reporting_song() {
+    $title = "";
+    if (isset($_REQUEST['song'])) {
+        $title = get_the_title($_REQUEST['song']);
+    }
+    echo json_encode(array("title" => $title, "id" => $_REQUEST['song']));
+    die();
+}
+add_action('wp_ajax_get_reporting_song', 'get_reporting_song');
+add_action('wp_ajax_nopriv_get_reporting_song', 'get_reporting_song');

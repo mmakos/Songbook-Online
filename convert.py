@@ -13,6 +13,9 @@ head = True
 VERSION = "4.2.1"
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        VERSION = sys.argv[1]
+
     doc = Document(f"docx/Śpiewnik-{VERSION}.docx")
     pars = doc.paragraphs
     sections = dict()
