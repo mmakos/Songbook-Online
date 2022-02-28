@@ -12,7 +12,7 @@ jQuery(document).ready(function($) {
         success: function (data) {
             const json = JSON.parse(data);
             if (json.title) {
-                $("span.title :input").attr("value", json.title);
+                $("span.title :input").attr("value", json.title).attr("readonly", "true");
             }
         }
     });
