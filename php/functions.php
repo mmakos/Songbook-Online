@@ -780,3 +780,35 @@ function get_reporting_song() {
 }
 add_action('wp_ajax_get_reporting_song', 'get_reporting_song');
 add_action('wp_ajax_nopriv_get_reporting_song', 'get_reporting_song');
+
+function wpb_count_songs() {
+    $total = wp_count_posts()->publish;
+    return $total;
+}
+add_shortcode('count_songs','wpb_count_songs');
+
+function get_random_song_id() {
+    if (isset($_GET["random"])) {
+        $connection = get_database_connection();
+        $url = site_url();
+
+        if ($connection) {
+            $sql_select = "SELECT object_id FROM ahsoka_term_relationships WHERE term_taxonomy_id='3' OR term_taxonomy_id='4'";
+
+            $select_result = mysqli_query($connection, $sql_select);
+            if ($select_result && $select_result->num_rows > 0) {
+                $song_index = rand(0, $select_result->num_rows - 1);
+                $result = mysqli_fetch_all($select_result);
+                $song_id = $result[$song_index][0];
+                if ($song_id) {
+                    $url .= "?p=" . $song_id;
+                }
+            }
+        }
+        wp_redirect($url, 307);
+        die();
+    } else {
+        return;
+    }
+}
+add_action('wp', 'get_random_song_id');
