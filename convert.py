@@ -10,7 +10,7 @@ from song import get_songs, add_authors, get_authors
 from str_convert import title_to_unique_name
 
 head = True
-VERSION = "4.2.1"
+VERSION = "4.2.2"
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
