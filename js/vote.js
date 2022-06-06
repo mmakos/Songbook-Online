@@ -17,11 +17,8 @@ jQuery(document).ready(function($) {
 	} else {
 		const voterId = getCookie("voterId");
 		if (voterId !== null) {
-			$("#vote-login").hide();
-			$("#vote-logout").show();
-			$("#vote-new-song-section").show();
-			updateAddedSongsCount();
-			getVoteSongs();
+			getVoteInfo();
+			showSongsHideRest();
 		}
 	}
 });
@@ -39,8 +36,7 @@ function voteNewSong() {
 		success: function(data) {
 			const json = JSON.parse(data);
 			document.getElementById("vote-new-song-info").innerHTML = json.result ? '<span style="color:green">Pomyślnie dodano nową piosenkę</span>' : '<span style="color:red">Nie udało się dodać nowej piosenki.</span>';
-			getVoteSongs();
-			updateAddedSongsCount();
+			getVoteInfo();
 		}
 	});
 }
@@ -60,15 +56,14 @@ function voteLoginWithToken(voterToken) {
 		success: function(data) {
 			const json = JSON.parse(data);
 			if (json.result) {
-				setCookie("voterId", voterToken, 1, true);
-				$("#vote-login-error").hide();
-				$("#vote-login").hide();
-				$("#vote-logout").show();
-				$("#vote-new-song-section").show();
-				getVoteSongs();
-				updateAddedSongsCount();
+				if (setCookie("voterId", voterToken, 1, true)) {
+					getVoteInfo();
+					showSongsHideRest();
+				} else {
+					$("vote-login-error").text("Jedz ciasteczka człowieku, bo bez tego nie da rady.").show();
+				}
 			} else {
-				$("#vote-login-error").show();
+				$("#vote-login-error").text("Użytkownik nie istnieje w bazie. Upewnij się, że podałeś poprawny token dostępu lub skontaktuj się ze mną.").show();
 			}
 		}
 	});
@@ -79,15 +74,17 @@ function voteLogout() {
 	location.href = location.href.split('?')[0];
 }
 
-function getVoteSongs() {
+function getVoteInfo() {
 	$.ajax({
 		url: ajaxurl,
 		data: {
-			'action':'get_vote_songs'
+			'action':'get_vote_info'
 		},
 		success: function(data) {
 			const json = JSON.parse(data);
-			setVoteSongs(json);
+			setVoteSongs(json.songs);
+			updateAddedSongsCount(json.songsCount);
+			setVoterName(json.voterName);
 			votesChanged(false);
 		}
 	});
@@ -141,25 +138,28 @@ function vote() {
 		success: function(data) {
 			const json = JSON.parse(data);
 			document.getElementById("vote-result").innerHTML = json.result ? '<span style="color:green">Pomyślnie zapisano głosy</span>' : '<span style="color:red">Nie udało się zapisać głosów</span>';
-			getVoteSongs();
+			getVoteInfo();
 		}
 	});
 }
 
-function updateAddedSongsCount() {
-	$.ajax({
-		url: ajaxurl,
-		data: {
-			'action':'get_added_songs_count'
-		},
-		success: function(data) {
-			const json = JSON.parse(data);
-			document.getElementById("added-to-vote-songs").innerHTML = json.songs;
-			if (json.songs >= MAX_SONGS) {
-				$("#vote-new-song").hide();
-			} else {
-				$("#vote-new-song").show();
-			}
-		}
-	});
+function updateAddedSongsCount(songsCount) {
+	document.getElementById("added-to-vote-songs").innerHTML = songsCount;
+	if (songsCount >= MAX_SONGS) {
+		$("#vote-new-song").hide();
+	} else {
+		$("#vote-new-song").show();
+	}
+}
+
+function setVoterName(voterName) {
+	document.getElementById("voter-name").innerHTML = voterName;
+}
+
+function showSongsHideRest() {
+	$("#vote-login-error").hide();
+	$("#vote-login").hide();
+	$("#vote-logout").show();
+	$("#vote-new-song-section").show();
+	$("#vote-songs-info").show();
 }

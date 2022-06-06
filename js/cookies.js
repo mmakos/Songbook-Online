@@ -15,7 +15,9 @@ function setCookie(name, value, hours, never=false) {
             }
         }
         document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        return true;
     }
+    return false;
 }
 
 function getCookie(name) {

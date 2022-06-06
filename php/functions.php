@@ -813,11 +813,17 @@ function get_random_song_id() {
 }
 add_action('wp', 'get_random_song_id');
 
-function get_vote_songs() {
+function get_vote_info() {
     $connection = get_database_connection();
 
-    if ($connection && isset($_COOKIE['voterId']) && is_voter_in_db($_COOKIE['voterId'])) {
+    if ($connection && isset($_COOKIE['voterId'])) {
         $voter_id = $_COOKIE['voterId'];
+        $voter_name = get_voter_name($voter_id, $connection);
+
+        if ($voter_name == null) {
+            echo json_encode(array());
+            die();
+        }
 
         $songs = mysqli_query($connection, "SELECT song_id, song, song_url FROM ahsoka_vote_songs");
 		$voted = mysqli_query($connection, "SELECT song_id FROM ahsoka_votes WHERE voter_id='$voter_id'");
@@ -830,9 +836,10 @@ function get_vote_songs() {
 			$votes[$vote[0]] = $vote[1];
 		}
 
-        if ($songs) {
-			$result = array();
+        $songs_count = get_added_songs_to_vote_by_voter($connection);
 
+        $result = array();
+        if ($songs) {
 			while ($row = mysqli_fetch_array($songs)) {
 				$id = $row['song_id'];
 				$title = $row['song'];
@@ -841,24 +848,24 @@ function get_vote_songs() {
 				$votes_for_song = $votes_for_song == null ? 0 : $votes_for_song;
 				$user_vote = in_array(array($row['song_id']), $voted_songs);
 
-				array_push($result, array("id" => $id, "title" => $title, "url" => $song_url, "votes" => $votes_for_song, "userVote" => $user_vote, "arr" => $votes_array));
+				$result[] = array("id" => $id, "title" => $title, "url" => $song_url, "votes" => $votes_for_song, "userVote" => $user_vote, "arr" => $votes_array);
 			}
-			echo json_encode($result);
         }
+        echo json_encode(array('songs' => $result, 'voterName' => $voter_name, 'songsCount' => $songs_count));
     } else {
 		echo json_encode(array());
 	}
     die();
 }
-add_action('wp_ajax_get_vote_songs', 'get_vote_songs');
-add_action('wp_ajax_nopriv_get_vote_songs', 'get_vote_songs');
+add_action('wp_ajax_get_vote_info', 'get_vote_info');
+add_action('wp_ajax_nopriv_get_vote_info', 'get_vote_info');
 
 function vote_songs() {
 	$MAX_VOTES = 7;
 	$votes_saved = false;
     $connection = get_database_connection();
 
-    if ($connection && isset($_COOKIE['voterId']) && isset($_REQUEST['songs'])) {
+    if ($connection && isset($_COOKIE['voterId']) && isset($_REQUEST['songs']) && is_voter_in_db($_COOKIE['voterId'], $connection)) {
 		$songs = json_decode($_REQUEST['songs']);
         $voter_id = $_COOKIE['voterId'];
 
@@ -879,22 +886,31 @@ add_action('wp_ajax_vote_songs', 'vote_songs');
 add_action('wp_ajax_nopriv_vote_songs', 'vote_songs');
 
 function authorize_voter() {
+    $connection = get_database_connection();
+    $authorized = false;
 
-    if (isset($_REQUEST['voterId'])) {
-		echo json_encode(array("result" => is_voter_in_db($_REQUEST['voterId'])));
+    if ($connection && isset($_REQUEST['voterId'])) {
+        $authorized = is_voter_in_db($_REQUEST['voterId'], $connection);
     }
+    echo json_encode(array("result" => $authorized));
     die();
 }
 add_action('wp_ajax_authorize_voter', 'authorize_voter');
 add_action('wp_ajax_nopriv_authorize_voter', 'authorize_voter');
 
-function is_voter_in_db($voter_id) {
-	$connection = get_database_connection();
+function get_voter_name($voter_id, $connection) {
+    $user = mysqli_query($connection, "SELECT name FROM ahsoka_vote_users WHERE id='$voter_id'");
 
-    if ($connection) {
-		$user = mysqli_query($connection, "SELECT * FROM ahsoka_vote_users WHERE id='$voter_id'");
-		return count(mysqli_fetch_all($user)) >= 1;
+    $users = mysqli_fetch_all($user);
+    if (!empty($users)) {
+        return $users[0];
+    } else {
+        return null;
     }
+}
+
+function is_voter_in_db($voter_id, $connection) {
+    return get_voter_name($voter_id, $connection) != null;
 }
 
 function vote_new_song() {
@@ -902,12 +918,12 @@ function vote_new_song() {
 	$connection = get_database_connection();
 	$new_song_saved = false;
 
-    if ($connection && isset($_COOKIE['voterId']) && isset($_REQUEST['songTitle']) && isset($_REQUEST['songUrl']) && is_voter_in_db($_COOKIE['voterId'])) {
+    if ($connection && isset($_COOKIE['voterId']) && isset($_REQUEST['songTitle']) && isset($_REQUEST['songUrl']) && is_voter_in_db($_COOKIE['voterId'], $connection)) {
         $voter_id = $_COOKIE['voterId'];
 		$song_title = $_REQUEST['songTitle'];
 		$song_url = $_REQUEST['songUrl'];
 
-		if (get_added_songs_to_vote_by_voter() < $MAX_SONGS) {
+		if (get_added_songs_to_vote_by_voter($connection) < $MAX_SONGS) {
 			$new_song_saved = mysqli_query($connection, "INSERT INTO ahsoka_vote_songs(song, song_url, creator) VALUES ('$song_title', '$song_url', '$voter_id')");
 		}
 	}
@@ -917,16 +933,8 @@ function vote_new_song() {
 add_action('wp_ajax_vote_new_song', 'vote_new_song');
 add_action('wp_ajax_nopriv_vote_new_song', 'vote_new_song');
 
-function get_added_songs_count() {
-	echo json_encode(array("songs" => get_added_songs_to_vote_by_voter()));
-    die();
-}
-add_action('wp_ajax_get_added_songs_count', 'get_added_songs_count');
-add_action('wp_ajax_nopriv_get_added_songs_count', 'get_added_songs_count');
-
-function get_added_songs_to_vote_by_voter() {
-	$connection = get_database_connection();
-	if ($connection && isset($_COOKIE['voterId'])) {
+function get_added_songs_to_vote_by_voter($connection) {
+	if (isset($_COOKIE['voterId'])) {
         $voter_id = $_COOKIE['voterId'];
 
 		return (int) mysqli_fetch_all(mysqli_query($connection, "SELECT COUNT(*) FROM ahsoka_vote_songs WHERE creator='$voter_id'"))[0][0];
