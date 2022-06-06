@@ -28,6 +28,7 @@ class Song:
 
         previous_text: str = "text"
         previous_chords: str = "chords"
+        previous_ident: int = 0
         for t, c in zip(self.text, self.chords):
             if len(previous_text.strip()) > 0 or len(previous_chords.strip()) > 0 or len(t.strip()) > 0 or len(
                     c[0].strip()) > 0:

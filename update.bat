@@ -3,7 +3,7 @@
 
 set version=4.2.2
 
-echo "Copying docx file"
+echo Copying docx file
 cp "C:\Users\mmakos\Documents\Śpiewnik\Śpiewnik-%version%.docx" docx
 
 echo Generating html files

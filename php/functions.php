@@ -812,3 +812,124 @@ function get_random_song_id() {
     }
 }
 add_action('wp', 'get_random_song_id');
+
+function get_vote_songs() {
+    $connection = get_database_connection();
+
+    if ($connection && isset($_COOKIE['voterId']) && is_voter_in_db($_COOKIE['voterId'])) {
+        $voter_id = $_COOKIE['voterId'];
+
+        $songs = mysqli_query($connection, "SELECT song_id, song, song_url FROM ahsoka_vote_songs");
+		$voted = mysqli_query($connection, "SELECT song_id FROM ahsoka_votes WHERE voter_id='$voter_id'");
+		$votes_result = mysqli_query($connection, "SELECT song_id, COUNT(*) FROM ahsoka_votes GROUP BY song_id");
+		$voted_songs = mysqli_fetch_all($voted);
+		$votes_array = mysqli_fetch_all($votes_result);
+
+		$votes = array();
+		foreach ($votes_array as $vote) {
+			$votes[$vote[0]] = $vote[1];
+		}
+
+        if ($songs) {
+			$result = array();
+
+			while ($row = mysqli_fetch_array($songs)) {
+				$id = $row['song_id'];
+				$title = $row['song'];
+				$song_url = $row['song_url'];
+				$votes_for_song = $votes[$id];
+				$votes_for_song = $votes_for_song == null ? 0 : $votes_for_song;
+				$user_vote = in_array(array($row['song_id']), $voted_songs);
+
+				array_push($result, array("id" => $id, "title" => $title, "url" => $song_url, "votes" => $votes_for_song, "userVote" => $user_vote, "arr" => $votes_array));
+			}
+			echo json_encode($result);
+        }
+    } else {
+		echo json_encode(array());
+	}
+    die();
+}
+add_action('wp_ajax_get_vote_songs', 'get_vote_songs');
+add_action('wp_ajax_nopriv_get_vote_songs', 'get_vote_songs');
+
+function vote_songs() {
+	$MAX_VOTES = 7;
+	$votes_saved = false;
+    $connection = get_database_connection();
+
+    if ($connection && isset($_COOKIE['voterId']) && isset($_REQUEST['songs'])) {
+		$songs = json_decode($_REQUEST['songs']);
+        $voter_id = $_COOKIE['voterId'];
+
+		if (count($songs) <= $MAX_VOTES) {
+			$sql = "DELETE FROM ahsoka_votes WHERE voter_id = '$voter_id';";
+
+			foreach ($songs as $song) {
+				$sql .= "INSERT INTO ahsoka_votes(voter_id, song_id) VALUES ('$voter_id', '$song');";
+			}
+			$votes_saved = $connection->multi_query($sql);
+		}
+    }
+
+	echo json_encode(array("result" => $votes_saved));
+    die();
+}
+add_action('wp_ajax_vote_songs', 'vote_songs');
+add_action('wp_ajax_nopriv_vote_songs', 'vote_songs');
+
+function authorize_voter() {
+
+    if (isset($_REQUEST['voterId'])) {
+		echo json_encode(array("result" => is_voter_in_db($_REQUEST['voterId'])));
+    }
+    die();
+}
+add_action('wp_ajax_authorize_voter', 'authorize_voter');
+add_action('wp_ajax_nopriv_authorize_voter', 'authorize_voter');
+
+function is_voter_in_db($voter_id) {
+	$connection = get_database_connection();
+
+    if ($connection) {
+		$user = mysqli_query($connection, "SELECT * FROM ahsoka_vote_users WHERE id='$voter_id'");
+		return count(mysqli_fetch_all($user)) >= 1;
+    }
+}
+
+function vote_new_song() {
+	$MAX_SONGS = 3;
+	$connection = get_database_connection();
+	$new_song_saved = false;
+
+    if ($connection && isset($_COOKIE['voterId']) && isset($_REQUEST['songTitle']) && isset($_REQUEST['songUrl']) && is_voter_in_db($_COOKIE['voterId'])) {
+        $voter_id = $_COOKIE['voterId'];
+		$song_title = $_REQUEST['songTitle'];
+		$song_url = $_REQUEST['songUrl'];
+
+		if (get_added_songs_to_vote_by_voter() < $MAX_SONGS) {
+			$new_song_saved = mysqli_query($connection, "INSERT INTO ahsoka_vote_songs(song, song_url, creator) VALUES ('$song_title', '$song_url', '$voter_id')");
+		}
+	}
+	echo json_encode(array("result" => $new_song_saved, ));
+    die();
+}
+add_action('wp_ajax_vote_new_song', 'vote_new_song');
+add_action('wp_ajax_nopriv_vote_new_song', 'vote_new_song');
+
+function get_added_songs_count() {
+	echo json_encode(array("songs" => get_added_songs_to_vote_by_voter()));
+    die();
+}
+add_action('wp_ajax_get_added_songs_count', 'get_added_songs_count');
+add_action('wp_ajax_nopriv_get_added_songs_count', 'get_added_songs_count');
+
+function get_added_songs_to_vote_by_voter() {
+	$connection = get_database_connection();
+	if ($connection && isset($_COOKIE['voterId'])) {
+        $voter_id = $_COOKIE['voterId'];
+
+		return (int) mysqli_fetch_all(mysqli_query($connection, "SELECT COUNT(*) FROM ahsoka_vote_songs WHERE creator='$voter_id'"))[0][0];
+	}
+	return 0;
+}
