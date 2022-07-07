@@ -28,11 +28,17 @@ class Song:
 
         previous_text: str = "text"
         previous_chords: str = "chords"
-        previous_ident: int = 0
+        previous_ident: int = -1
         for t, c in zip(self.text, self.chords):
             if len(previous_text.strip()) > 0 or len(previous_chords.strip()) > 0 or len(t.strip()) > 0 or len(
                     c[0].strip()) > 0:
-                final_text.append(t.replace("\t", "&emsp;&emsp;"))
+                current_ident = get_ident(t)
+                if 0 <= previous_ident != current_ident >= 0:
+                    final_text.append(str())
+                    final_chords.append(str())
+                previous_ident = current_ident
+                text = t.replace("\t", "&emsp;&emsp;")
+                final_text.append(text)
                 chords_split = c[0].strip().split("\t")
                 split_chords = list()
                 for chord in chords_split:
@@ -279,6 +285,17 @@ def __get_newlines_number(line: str):
         else:
             return number
     return number
+
+
+def get_ident(line: str):
+    if len(line.strip()) == 0:
+        return -1
+    ident = 0
+    for char in line:
+        if char == "\t":
+            ident += 1
+        else:
+            return ident
 
 
 def get_chords_without_tune_as_chord(chords: list[str]):
