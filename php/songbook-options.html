@@ -1,13 +1,14 @@
-<form class="songbook-settings">
+<form class="songbook-settings" action="../konwersja-spiewnika">
+    <button type="submit" class="header-button" style="margin-top: 0">Pobierz</button>
     <fieldset id="general-settings">
         <legend>Ustawienia ogólne</legend>
         <div>
-            <input id="show-author" type="checkbox" onclick="hideAuthor()" checked>
+            <input id="show-author" name="show-author" type="checkbox" onclick="hideAuthor()" checked>
             <label for="show-author">Pokaż autorów piosenek</label>
         </div>
         <div>
             <label for="tab-stops-offset">Odległość akordów od tekstu w centrymetrach</label>
-            <input id="tab-stops-offset" type="number" value="0.5" min="0.01" max="3.00" step="0.01" onclick="setPaddingRight()">
+            <input id="tab-stops-offset" name="tab-stops-offset" type="number" value="0.5" min="0.01" max="3.00" step="0.01" onclick="setPaddingRight()">
         </div>
     </fieldset>
     <fieldset id="font-settings">
@@ -18,23 +19,30 @@
         </div>
         <div id="font-style">
             <label style="font-family: Verdana,serif">Czcionka</label>
-            <select title="Typ czcionki" id="font-family" onclick="setFontFamily()">
-                <option value="Verdana" style="font-family: Verdana,serif">Verdana</option>
-                <option value="Arial" style="font-family: Arial,serif">Arial</option>
-                <option value="Times New Roman" style="font-family: Times New Roman,serif">Times New Roman</option>
+            <select title="Typ czcionki" id="font-family" name="font-family" onclick="setFontFamily()">
+                <option value="verdana" style="font-family: Verdana,serif">Verdana</option>
+                <option value="arial" style="font-family: Arial,serif">Arial</option>
+                <option value="times" style="font-family: 'Times New Roman',serif">Times New Roman</option>
+                <option value="georgia" style="font-family: Georgia,serif">Georgia</option>
+                <option value="calibri" style="font-family: Calibri,serif">Calibri</option>
+                <option value="cambria" style="font-family: Cambria,serif">Cambria</option>
+                <option value="candara" style="font-family: Candara,serif">Candara</option>
+                <option value="comic" style="font-family: 'Comic Sans MS',serif">Comic Sans MS</option>
+                <option value="consola" style="font-family: Consolas,serif">Consolas</option>
+                <option value="cour" style="font-family: 'Courier New',serif">Courier New</option>
             </select>
-            <input id="font-size" title="Rozmiar czcionki" type="number" value="9" min="2.0" max="50.0" step="0.1" onclick="textSizeChanged()"/>
+            <input id="font-size" name="font-size" title="Rozmiar czcionki" type="number" value="9" min="2.0" max="50.0" step="0.1" onclick="textSizeChanged()"/>
         </div>
         <table>
             <tr id="text-style">
                 <td><label>Styl tekstu</label></td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="text-style-bold" onclick="textStyleBold()"><span
+                    <div class="toggle-button"><label><input type="checkbox" id="text-style-bold" name="text-style-bold" onclick="textStyleBold()"><span
                             style="font-weight: bold">pogrubienie</span></label>
                     </div>
                 </td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="text-style-italic" onclick="textStyleItalic()"><span
+                    <div class="toggle-button"><label><input type="checkbox" id="text-style-italic" name="text-style-italic" onclick="textStyleItalic()"><span
                             style="font-style: italic">kursywa</span></label>
                     </div>
                 </td>
@@ -42,12 +50,12 @@
             <tr id="chord-style">
                 <td><label>Styl akordów</label></td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="chord-style-bold" onclick="chordStyleBold()" checked><span
+                    <div class="toggle-button"><label><input type="checkbox" id="chord-style-bold" name="chord-style-bold" onclick="chordStyleBold()" checked><span
                             style="font-weight: bold">pogrubienie</span></label>
                     </div>
                 </td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="chord-style-italic" onclick="chordStyleItalic()"><span
+                    <div class="toggle-button"><label><input type="checkbox" id="chord-style-italic" name="chord-style-italic" onclick="chordStyleItalic()"><span
                             style="font-style: italic">kursywa</span></label>
                     </div>
                 </td>
@@ -55,12 +63,12 @@
             <tr id="repetition-style">
                 <td><label>Styl powtórzeń</label></td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="repetition-style-bold" onclick="repetitionStyleBold()" checked><span
+                    <div class="toggle-button"><label><input type="checkbox" id="repetition-style-bold" name="repetition-style-bold" onclick="repetitionStyleBold()" checked><span
                             style="font-weight: bold">pogrubienie</span></label>
                     </div>
                 </td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="repetition-style-italic" onclick="repetitionStyleItalic()"><span
+                    <div class="toggle-button"><label><input type="checkbox" id="repetition-style-italic" name="repetition-style-italic" onclick="repetitionStyleItalic()"><span
                             style="font-style: italic">kursywa</span></label>
                     </div>
                 </td>
@@ -68,12 +76,12 @@
             <tr id="tonation-style">
                 <td><label>Styl oznaczenia tonacji</label></td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="tonation-style-bold" onclick="tonationStyleBold()" checked><span
+                    <div class="toggle-button"><label><input type="checkbox" id="tonation-style-bold" name="tonation-style-bold" onclick="tonationStyleBold()" checked><span
                             style="font-weight: bold">pogrubienie</span></label>
                     </div>
                 </td>
                 <td>
-                    <div class="toggle-button"><label><input type="checkbox" id="tonation-style-italic" onclick="tonationStyleItalic()" checked><span
+                    <div class="toggle-button"><label><input type="checkbox" id="tonation-style-italic" name="tonation-style-italic" onclick="tonationStyleItalic()" checked><span
                             style="font-style: italic">kursywa</span></label>
                     </div>
                 </td>
@@ -90,63 +98,64 @@
         </div>
         <fieldset id="chord-options" style="margin-bottom: 10px">
             <legend>Gotowe presety:</legend>
-            <div><input class="chord-option" name="chord-option" id="preset-beginner" type="radio"
+            <div><input class="chord-option" id="preset-beginner" type="radio"
                         onclick="presetBeginner()"><label for="preset-beginner"> Początkujący</label></div>
-            <div><input class="chord-option" name="chord-option" id="preset-intermediate" type="radio"
+            <div><input class="chord-option" id="preset-intermediate" type="radio"
                         onclick="presetIntermediate()"><label for="preset-intermediate"> Średniozaawansowany</label>
             </div>
-            <div><input class="chord-option" name="chord-option" id="preset-advanced" type="radio"
+            <div><input class="chord-option" id="preset-advanced" type="radio"
                         onclick="presetAdvanced()"><label for="preset-advanced"> Zaawansowany</label></div>
         </fieldset>
-        <div><input class="chord-option" id="hide-uncommon-added-interval" type="checkbox"
+        <div><input class="chord-option" id="hide-uncommon-added-interval" name="hide-uncommon-added-interval" type="checkbox"
                     onclick="hideUncommonAddedInterval()"><span style="color: green;"
                                                                 title="Wspierane w wersji online i w generatorze">&#x2713;</span>
             Ukryj niestandardowe składniki (<sup>6&gt;</sup>, <sup>2&gt;</sup>, <sup>4&lt;</sup>, <sup>9(&gt;)</sup>)
             (<b>A<sup>6></sup>/A<sup>9&gt;</sup> → A</b>)
         </div>
-        <div><input class="chord-option" id="aug-and-dim-guitar-mode" type="checkbox"
+        <div><input class="chord-option" id="aug-and-dim-guitar-mode" name="aug-and-dim-guitar-mode" type="checkbox"
                     onclick="augAndDimGuitarMode()"><span style="color: green;"
                                                           title="Wspierane w wersji online i w generatorze">&#x2713;</span>
             Augmentacje i diminucje w notacji gitarowej (<b>A<sup>7&lt;</sup> e<sup>6&gt;</sup> → A<sup>7+</sup>
                 e<sup>6-</sup></b>)
         </div>
-        <div><input class="chord-option" id="divide-delays" type="checkbox" onclick="divideDelays()"><span
+        <div><input class="chord-option" id="divide-delays" name="divide-delays" type="checkbox" onclick="divideDelays()"><span
                 style="color: orange;" title="Wspierane tylko w generatorze">&#x26A0;</span> Rozdziel opóźnienia na
             osobne akordy (<b>A<sup>4-3</sup> → A<sup>4</sup> A</b>)
         </div>
-        <div><input class="chord-option" id="hide-incomplete-chords" type="checkbox"
+        <div><input class="chord-option" id="hide-incomplete-chords" name="hide-incomplete-chords" type="checkbox"
                     onclick="hideIncompleteChords()"><span style="color: green;"
                                                            title="Wspierane w wersji online i w generatorze">&#x2713;</span>
             Ukryj puste kwinty i unison (<b>A<sup>1</sup>/A<sup>5</sup> → A</b>)
         </div>
-        <div><input class="chord-option" id="simplify-multiply" type="checkbox" onclick="simplifyMultiply()"><span
+        <div><input class="chord-option" id="simplify-multiply" name="simplify-multiply" type="checkbox" onclick="simplifyMultiply()"><span
                 style="color: green;" title="Wspierane w wersji online i w generatorze">&#x2713;</span> Wyświetl
             max. 1 dodany składnik (<b>E<sup>64</sup> → E<sup>4</sup></b>)
         </div>
-        <div><input class="chord-option" id="simplify-aug-to-guitar" type="checkbox"
+        <div><input class="chord-option" id="simplify-aug-to-guitar" name="simplify-aug-to-guitar" type="checkbox"
                     onclick="simplifyAugToGuitar()"><span style="color: green;"
                                                           title="Wspierane w wersji online i w generatorze">&#x2713;</span>
             Akordy zmniejszone w notacji gitarowej, ukryj zwiększone (<b>e> → e<sup>0</sup></b>)
         </div>
-        <div><input class="chord-option" id="hide-base" type="checkbox" onclick="hideBase()"><span
+        <div><input class="chord-option" id="hide-base" name="hide-base" type="checkbox" onclick="hideBase()"><span
                 style="color: green;" title="Wspierane w wersji online i w generatorze">&#x2713;</span> Ukryj
             składniki w basie (<b>A<sub>3</sub> → A</b>)
         </div>
-        <div><input class="chord-option" id="hide-alternative-key-flag" type="checkbox"
+        <div><input class="chord-option" id="hide-alternative-key-flag" name="hide-alternative-key-flag" type="checkbox"
                     onclick="hideAlternativeKey()"><span style="color: green;"
                                                          title="Wspierane w wersji online i w generatorze">&#x2713;</span>
             Ukryj alternatywne tonacje
         </div>
-        <div><input class="chord-option" id="hide-key-mark-flag" type="checkbox" onclick="hideKeyMark()"><span
+        <div><input class="chord-option" id="hide-key-mark-flag" name="hide-key-mark-flag" type="checkbox" onclick="hideKeyMark()"><span
                 style="color: green;" title="Wspierane w wersji online i w generatorze">&#x2713;</span> Ukryj
             oznaczenie tonacji <b><i>(A→B)</i></b></div>
     </fieldset>
+    <button type="submit" class="header-button" style="margin-top: 10px">Pobierz</button>
 </form>
 
 <div id="song">
+    <div id="author" class="author">sł. Michał Makoś<br/>muz. Gall Anonim</div>
     <table style="padding: 0 0 0 0">
         <tr>
-            <div id="author" class="author">sł. Michał Makoś<br/>muz. Gall Anonim</div>
             <td id="song-text" style="padding-right: 0.5cm"><span>Przykładowa to piosenka<br/></span>
                 <span>Żeby dobyć trochę dźwięka<br/></span>
                 <span>Bo bez tego każdy stęka<br/></span>
@@ -173,3 +182,9 @@
         </tr>
     </table>
 </div>
+
+<pre style="color: red">Traceback (most recent call last):
+  File "C:\Users\mmakos\Documents\songbook2docx\test.py", line 6, in elo
+    print(elo2)
+          ^^^^
+NameError: name 'elo2' is not defined</pre>

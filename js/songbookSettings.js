@@ -1,3 +1,5 @@
+textSizeChanged();
+
 function hideAuthor() {
     const hide = !document.getElementById('show-author').checked;
     document.getElementById('author').style.display = hide ? "none" : null;
@@ -20,9 +22,9 @@ function setFontFamily() {
 }
 
 function textSizeChanged() {
-    const size = document.getElementById('font-size').value * 14 / 9;
+    const size = document.getElementById('font-size').value * 0.42 / 12;
     for (const span of document.getElementById('song').getElementsByTagName('span')) {
-        span.style.fontSize = size;
+        span.style.fontSize = size + "cm";
     }
 }
 

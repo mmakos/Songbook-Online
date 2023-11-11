@@ -75,10 +75,15 @@ function resetChords() {
     const chords = document.getElementsByClassName("chords");
     for (let i = 0; i < chords.length; i++) {
         chords[i].innerHTML = originChords[i];
+        chords[i].style.display = null;
     }
-    const temp_transposition = current_transposition;
-    current_transposition = 0;
-    transpose(temp_transposition);
+    try {
+        const temp_transposition = current_transposition;
+        current_transposition = 0;
+        transpose(temp_transposition);
+    } catch (error) {
+
+    }
 }
 
 function processAllOptions() {
@@ -203,9 +208,11 @@ function simplifyMultiply() {
         for (const chord of document.getElementsByClassName("chords")) {
             for (const sup of chord.getElementsByTagName('sup')) {
                 const b = sup.getElementsByTagName('b');
-                const splitHTML = b[b.length - 1].innerHTML.split(/( |(?<=[0-9](?=[0-9])))/);
-                b[b.length - 1].innerHTML = splitHTML[splitHTML.length - 1];
-                sup.innerHTML = b[b.length - 1].outerHTML;
+                if (b[b.length - 1]) {
+                    const splitHTML = b[b.length - 1].innerHTML.split(/( |(?<=[0-9](?=[0-9])))/);
+                    b[b.length - 1].innerHTML = splitHTML[splitHTML.length - 1];
+                    sup.innerHTML = b[b.length - 1].outerHTML;
+                }
             }
         }
     } else {
@@ -253,16 +260,15 @@ function hideAlternativeKey() {
 
     const chordColumns = document.getElementsByClassName("chords");
 
+    // To jest po te, żeby nie ukrywać powtórzeń będących po akordach
     if (chordColumns.length > 1) {
         const columnSpansCount = [].slice.call(chordColumns)
             .map(function (column) {
                 return [].slice.call(column.getElementsByTagName("span"))
                     .filter(function (span) {
-                        console.log(span.innerText);
                         return span.innerText.trim().length > 0;
                     }).length;
             });
-        console.log(columnSpansCount);
 
         for (let i = 1; i < columnSpansCount.length; i++) {
             if (columnSpansCount[i] > 0.9 * columnSpansCount[0]) {
