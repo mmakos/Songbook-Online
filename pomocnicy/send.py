@@ -18,28 +18,36 @@ token = os.getenv('discord_token')
 
 pomocnicy = list()
 
-PREFIX = ["kadra", "pomocnicy"]
+# PREFIX = ["kadra", "pomocnicy"]
+PREFIX = ["pomocnicy"]
 MAIL_TITLE = "Obóz pomocników 2022 - kwaterka"
+
+
+info2008 = """
+Ponieważ jesteś z rocznika 2008 (oficjalny minimalny wiek uczestnika to 16 lat), a zgłoszeń jest trochę więcej, niż miejsc, to Twoje uczestnictwo w kursie jest warunkowe - oznacza to, że nie możemy Ci w 100% zagwarantować miejsca na kursie i będziemy Ci się baczniej przyglądać na spotkaniach itd. :-)
+"""
 
 
 def createMail(pom: dict) -> str:
     return f"""\
-Cześć {pom["name"]},
+Drog{"a" if isWoman(pom) else "i"} {pom["nameWolacz"]},
 
-Poszukujemy kilku osób na kwaterkę do obozu pomocników. Jeśli chciał{"a" if isWoman(pom) else ""}byś pojechać, to zgłoś się jak najszybciej (do piątku do wieczora bezpośrednio do mnie, albo odpowiadając na tego maila), gdyż pojadą pewnie tylko ze 4 osoby.
-Kwaterka będzie tak jak już kiedyś, na pierwszym spotkaniu mówiliśmy - od 23 lipca, wyjazd w sobotę rano. 
+Twoja kadra zgłosiła Ciebie na tegoroczny kurs pomocników. Teraz prosimy, abyś Ty wypełnił{"a" if isWoman(pom) else ""} formularz zgłoszeniowy uczestnika, potwierdzając tym samym chęć uczestnictwa. Napisz po kilka znań w miejscach na długą odpowiedź - te ankiety są dla nas bardzo ważne.
+Formularz znajduje się tutaj: https://forms.gle/yv8CZ6s1fzguebRg6.
+Prosimy, abyś zrobił{"a" if isWoman(pom) else ""} to do końca tygodnia, tj. do 26 marca 2023. Jeżeli to zrobisz, to po weekendzie spodziewaj się odpowiedzi/potwierdzenia oraz dalszych informacji, w tym o pierwszym spotkaniu, które odbędzie się już 2 kwietnia o godzinie 18:30.
+{info2008 if pom["year"] == "2008" else ""}
+Harmonogram i inne informacje o kursie są dostępne na naszej stronie internetowej: https://pomocnicy.kik.waw.pl/.
 
-Dużo roboty w tym roku nie będzie, bo będziemy przejmować obóz po poprzedniej grupie, tak więc będziemy musieli jedynie:
-- Spakować ewentualne rzeczy (jakiś namiot dodatkowy, kanadyjki itd.) do transportu z Warszawy
-- Rozbić 1-2 dodatkowe namioty
-- Dobudować/ponaprawiać rzeczy po poprzedniej grupie
-- Ewentualnie pomóc wychowawcom w ich kwaterce, jak będą chcieli
-- Pochillować sobie nad Morzem Wąpierskim.
+Pamiętaj, że obecność na zaplanowanych spotkaniach przed obozem jest obowiązkowa. Jeżeli już teraz wiesz, że na którymś może Cię nie być, to koniecznie daj nam znać. Fajnie, jakbyś zapoznał{"a" if isWoman(pom) else ""} się też z innymi treściami na stronie - opisaliśmy tam jak wygląda kurs, czego można się spodziewać i czego będziemy wymagać.
 
-Zachęcam w szczególności osoby, które już spodziewają się, że w przyszłości w kadrowaniu to one będą zajmować się kwaterką.
+Pozdrawiamy,
+Kadra kursu pomocników 2023:
+Jerzy Traczyński
+Szymon Święcicki
+Emilka Mańczak
+Michał Makoś
 
-Pozdrawiam,
-Michał Makoś w imieniu kadry kursu pomocników 2022
+Mail: pomocnicy@kik.waw.pl
 Odwiedź: www.pomocnicy.kik.waw.pl
     """
 
@@ -128,12 +136,15 @@ def read_csv():
             next(reader)
 
             for row in reader:
-                pomocnicy.append({"token": row[0],
+                pomocnicy.append({"token": "null",
                                   "name": row[2],
-                                  "lastName": row[1],
-                                  "mail": row[6]})
+                                  "nameWolacz": row[8],
+                                  "lastName": row[3],
+                                  "group": row[4],
+                                  "mail": row[7],
+                                  "year": row[6]})
 
 
 read_csv()
-# send_emails(pomocnicy)
-send_discord_msgs()
+send_emails(pomocnicy)
+# send_discord_msgs()

@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 
 from convert import VERSION
 from str_convert import replace_date
@@ -7,6 +8,8 @@ from distutils.dir_util import copy_tree
 
 BACKUP = False
 
+if len(sys.argv) > 1:
+    VERSION = sys.argv[1]
 
 def get_title(song_html: str) -> str:
     start = song_html.find("<h2>") + 4

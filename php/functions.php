@@ -678,7 +678,7 @@ function get_meeting_songs_with_arguments($addArgs=array()) {
 
     if ($connection && isset($_COOKIE['meeting'])) {
         $meeting_id = $_COOKIE['meeting'];
-        $sql_select = "SELECT post_title, song_id, add_date FROM ahsoka_meeting_songs INNER JOIN ahsoka_posts WHERE meeting_id='$meeting_id' AND ahsoka_meeting_songs.song_id = ahsoka_posts.ID ORDER BY add_date";
+        $sql_select = "SELECT post_title, song_id, add_date, flags, transposition, song_url, song_name FROM ahsoka_meeting_songs INNER JOIN ahsoka_posts WHERE meeting_id='$meeting_id' AND ahsoka_meeting_songs.song_id = ahsoka_posts.ID ORDER BY add_date";
         $select_result = mysqli_query($connection, $sql_select);
         if ($select_result) {
             if ($select_result->num_rows > 0) {
@@ -688,9 +688,16 @@ function get_meeting_songs_with_arguments($addArgs=array()) {
                 $currentSong = url_to_postid( wp_get_referer() );
                 while ($row = mysqli_fetch_array($select_result)) {
                     $id = $row['song_id'];
+                    $url = "https://spiewnik.mmakos.pl/?p=" . $id ."&flags=" . $row['flags'] . "&transposition=" . $row['transposition'];
                     $name = $row['post_title'];
-                    $url = "https://spiewnik.mmakos.pl/?p=" . $id;
-                    $result = $result . '<a class="dropzone" draggable="true" href="' . $url . '" id="song:' . $id . '">' . $name . '</a>';
+                    $new_tab = "";
+                    if ($id == 1) {
+                        $url = $row['song_url'];
+                        $name = $row['song_name'];
+                        $id = $url;
+                        $new_tab = ' target="_blank" rel="noopener"';
+                    }
+                    $result = $result . '<a class="dropzone" draggable="true" href="' . $url . '" id="song:' . $id . '"' . $new_tab . '>' . $name . '</a>';
 
                     if ($currentSong == $id) {
                         $isCurrentInMeeting = true;
@@ -699,16 +706,29 @@ function get_meeting_songs_with_arguments($addArgs=array()) {
                 echo json_encode(array_merge(array("queue" => $result, "song-in-meeting" => $isCurrentInMeeting), $addArgs));
             }
             else {
-                echo json_encode(array_merge(array("info" => "Na tym spotkaniu nie ma żadnych piosenek w kolejce."), $addArgs));
+                echo json_encode(array_merge(array("info" => "Na tych śpiewankach nie ma żadnych piosenek w kolejce."), $addArgs));
             }
         } else {
-            echo json_encode(array_merge(array("info" => "Nie udało się pobrać piosenek dla spotkania $meeting_id"), $addArgs));
+            echo json_encode(array_merge(array("info" => "Nie udało się pobrać piosenek dla śpiewanek $meeting_id"), $addArgs));
         }
     }
     die();
 }
 add_action('wp_ajax_get_meeting_songs', 'get_meeting_songs');
 add_action('wp_ajax_nopriv_get_meeting_songs', 'get_meeting_songs');
+
+function get_wywrota_title($url) {
+    $html = file_get_contents($url);
+    $title_start = strpos($html, "<title>");
+    if ($title_start) {
+        $title_start += strlen("<title>");
+        $title_end = strpos($html, "</title>");
+        $title_whole = substr($html, $title_start, $title_end - $title_start);
+        $title = explode(" - ", $title_whole, 2)[0];
+        return $title;
+    }
+    return $url;
+}
 
 function song_in_meeting_action() {
     $connection = get_database_connection();
@@ -717,11 +737,13 @@ function song_in_meeting_action() {
         $meeting_id = $_COOKIE['meeting'];
         $url = wp_get_referer();
         $song_id = url_to_postid( $url );
+        $flags = $_REQUEST['flags'];
+        $transposition = $_REQUEST['transposition'];
 
         $sql = "";
         if ($_REQUEST['song-action'] == 'add') {
             $time = DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''))->format("Y-m-d H:i:s.u");
-            $sql = "INSERT INTO ahsoka_meeting_songs(meeting_id, song_id, add_date) VALUES ('$meeting_id', $song_id, '$time')";
+            $sql = "INSERT INTO ahsoka_meeting_songs(meeting_id, song_id, add_date, flags, transposition) VALUES ('$meeting_id', $song_id, '$time', '$flags', '$transposition')";
         } else if ($_REQUEST['song-action'] == 'remove') {
             $sql = "DELETE FROM ahsoka_meeting_songs WHERE meeting_id='$meeting_id' AND song_id=$song_id";
         }
@@ -741,6 +763,36 @@ function song_in_meeting_action() {
 add_action('wp_ajax_song_in_meeting_action', 'song_in_meeting_action');
 add_action('wp_ajax_nopriv_song_in_meeting_action', 'song_in_meeting_action');
 
+function add_external_song() {
+    $connection = get_database_connection();
+
+    if ($connection && isset($_COOKIE['meeting'])) {
+        $meeting_id = $_COOKIE['meeting'];
+        $url = $_REQUEST['song-url'];
+        $song_name = get_wywrota_title($url);
+        $flags = 0;
+        $transposition = 0;
+
+        $sql = "";
+        $time = DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''))->format("Y-m-d H:i:s.u");
+        $sql = "INSERT INTO ahsoka_meeting_songs(meeting_id, song_id, add_date, flags, transposition, song_url, song_name) VALUES ('$meeting_id', 1, '$time', '$flags', '$transposition', '$url', '$song_name')";
+
+
+        $result = mysqli_query($connection, $sql);
+        if (!$result) {
+            get_meeting_songs_with_arguments(array("info" => "Nie udało się zmodyfikować kolejki w bazie danych.", "status" => "failed"));
+        } else {
+            get_meeting_songs_with_arguments(array("status" => "success", "song_name" => get_wywrota_title($url)));
+        }
+    } else {
+        echo json_encode(array("info" => "Nie udało się połączyć z bazą danych.", "status" => "failed"));
+    }
+
+    die();
+}
+add_action('wp_ajax_add_external_song', 'add_external_song');
+add_action('wp_ajax_nopriv_add_external_song', 'add_external_song');
+
 function order_meeting() {
     $connection = get_database_connection();
 
@@ -749,18 +801,25 @@ function order_meeting() {
         $song_list = $_REQUEST['song-order'];
         $sql = "";
 
+        $log = "";
+
         $time = microtime(true);
         foreach ($song_list as $song) {
-            $song_ids = explode(':', $song);
+            $song_ids = explode(':', $song, 2);
             if (count($song_ids) > 1) {
                 $song_id = $song_ids[1];
                 $now = DateTime::createFromFormat('U.u', number_format($time, 6, '.', ''))->format("Y-m-d H:i:s.u");
-                $sql .= "UPDATE ahsoka_meeting_songs SET add_date = '$now' WHERE meeting_id = '$meeting_id' AND song_id = $song_id;";
+                if (is_numeric($song_id)) {
+                    $sql .= "UPDATE ahsoka_meeting_songs SET add_date = '$now' WHERE meeting_id = '$meeting_id' AND song_id = $song_id;";
+                } else {
+                    $sql .= "UPDATE ahsoka_meeting_songs SET add_date = '$now' WHERE meeting_id = '$meeting_id' AND song_id = 1 AND song_url = '$song_id';";
+                }
                 $time += 0.000001;
             }
         }
 
         $connection->multi_query($sql);
+        echo json_encode(array("sql" => $sql, "log" => $log));
     } else {
         echo "Nie udało się połączyć z bazą danych";
     }

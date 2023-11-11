@@ -71,7 +71,7 @@ class Song:
 
     def to_html(self) -> str:
         def get_html_column(text: list[str], chords=False):
-            s = "<td id=\"chords\">" if chords else "<td>"
+            s = "<td class=\"chords\">" if chords else "<td>"
             for text_line in text:
                 s += f"""<span>{text_line}<br></span>"""
             s += "</td>"
@@ -263,6 +263,9 @@ def __get_html_formatted_text(run: Run, chords=False) -> str:
     if run.font.superscript:
         begin += "<sup>"
         end = "</sup>" + end
+    if run.font.strike:
+        begin += "<s>"
+        end = "</s>" + end
     if run.bold:
         if chords:
             begin += "<b class=\"chord\">"
@@ -271,10 +274,13 @@ def __get_html_formatted_text(run: Run, chords=False) -> str:
         end = "</b>" + end
 
     stripped = run.text.strip()
+    stripped_origin = stripped
     stripped_pos = run.text.find(stripped)
+    stripped = stripped.replace(">", "&gt;")
+    stripped = stripped.replace("<", "&lt;")
 
     return run.text[:stripped_pos] + begin + stripped + end + \
-           run.text[stripped_pos + len(stripped):]
+           run.text[stripped_pos + len(stripped_origin):]
 
 
 def __get_newlines_number(line: str):

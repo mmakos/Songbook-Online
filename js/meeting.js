@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
     setInputMeetingListener();
-    const meetingId = getCookie("meeting");
+    const meetingId = decodeURIComponent(getCookie("meeting"));
     setMeetingId(meetingId);
     setMeetingContent(meetingId !== null, true);
     setInputButton(meetingId !== null);
@@ -13,7 +13,9 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             data: {
                 'action':'song_in_meeting_action',
-                'song-action': songInMeeting ? 'remove' : 'add'
+                'song-action': songInMeeting ? 'remove' : 'add',
+                'flags': getChordOptions(),
+                'transposition': getTransposition()
             },
             success: function(data) {
                 const json = JSON.parse(data);
@@ -97,25 +99,25 @@ function setMeetingContent(isInMeeting, siteStart=false) {
 
 function setInputButton(isInMeeting) {
     let buttonText = isInMeeting ? "Opuść" : "Dołącz";
-    let button = document.getElementById("meeting-submit")
+    let button = document.getElementById("meeting-submit");
     if (button !== null) {
         button.innerHTML = buttonText;
     }
 }
 
 function setSongQueue(songQueue) {
-    let queueLabel = document.getElementById("meeting-queue")
-    queueLabel.innerHTML = songQueue["queue"] ? songQueue["queue"] : "";
-    let infoLabel = document.getElementById("meeting-information")
-    infoLabel.innerHTML = songQueue["info"] ? songQueue["info"] : "";
+    let queueLabel = document.getElementById("meeting-queue");
+    queueLabel.innerHTML = songQueue.queue ? songQueue.queue : "";
+    let infoLabel = document.getElementById("meeting-information");
+    infoLabel.innerHTML = songQueue.info ? songQueue.info : "";
 }
 
 function setMeetingId(meetingId) {
-    let meetingStr = "Spotkanie";
+    let meetingStr = "Śpiewanki";
     if (meetingId !== null) {
         meetingStr += ": " + meetingId;
     }
-    let meetingLabel = document.getElementById("meeting-id")
+    let meetingLabel = document.getElementById("meeting-id");
     if (meetingLabel !== null) {
         meetingLabel.innerHTML = meetingStr;
     }
@@ -136,4 +138,14 @@ function setInputMeetingListener() {
             $("#meeting-submit").click();
         }
     });
+}
+
+function getTransposition() {
+    let result = ((current_transposition % 12 + 12) % 12);
+    if (last_direction < 0) {
+        result -= 12;
+    } else if (last_direction > 0 && result === 0) {
+        result += 12;
+    }
+    return result;
 }

@@ -1,0 +1,175 @@
+<form class="songbook-settings">
+    <fieldset id="general-settings">
+        <legend>Ustawienia ogólne</legend>
+        <div>
+            <input id="show-author" type="checkbox" onclick="hideAuthor()" checked>
+            <label for="show-author">Pokaż autorów piosenek</label>
+        </div>
+        <div>
+            <label for="tab-stops-offset">Odległość akordów od tekstu w centrymetrach</label>
+            <input id="tab-stops-offset" type="number" value="0.5" min="0.01" max="3.00" step="0.01" onclick="setPaddingRight()">
+        </div>
+    </fieldset>
+    <fieldset id="font-settings">
+        <legend>Czcionka piosenki</legend>
+        <div style="color: red">
+            Uwaga, jeżeli chcemy zmienić któreś z poniższych ustawień, musimy to zrobić już tutaj, a nie w Wordzie,
+            ponieważ te ustawienia zmieniają szerokość tekstu, co może spowodować rozjechanie się akordów.
+        </div>
+        <div id="font-style">
+            <label style="font-family: Verdana,serif">Czcionka</label>
+            <select title="Typ czcionki" id="font-family" onclick="setFontFamily()">
+                <option value="Verdana" style="font-family: Verdana,serif">Verdana</option>
+                <option value="Arial" style="font-family: Arial,serif">Arial</option>
+                <option value="Times New Roman" style="font-family: Times New Roman,serif">Times New Roman</option>
+            </select>
+            <input id="font-size" title="Rozmiar czcionki" type="number" value="9" min="2.0" max="50.0" step="0.1" onclick="textSizeChanged()"/>
+        </div>
+        <table>
+            <tr id="text-style">
+                <td><label>Styl tekstu</label></td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="text-style-bold" onclick="textStyleBold()"><span
+                            style="font-weight: bold">pogrubienie</span></label>
+                    </div>
+                </td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="text-style-italic" onclick="textStyleItalic()"><span
+                            style="font-style: italic">kursywa</span></label>
+                    </div>
+                </td>
+            </tr>
+            <tr id="chord-style">
+                <td><label>Styl akordów</label></td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="chord-style-bold" onclick="chordStyleBold()" checked><span
+                            style="font-weight: bold">pogrubienie</span></label>
+                    </div>
+                </td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="chord-style-italic" onclick="chordStyleItalic()"><span
+                            style="font-style: italic">kursywa</span></label>
+                    </div>
+                </td>
+            </tr>
+            <tr id="repetition-style">
+                <td><label>Styl powtórzeń</label></td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="repetition-style-bold" onclick="repetitionStyleBold()" checked><span
+                            style="font-weight: bold">pogrubienie</span></label>
+                    </div>
+                </td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="repetition-style-italic" onclick="repetitionStyleItalic()"><span
+                            style="font-style: italic">kursywa</span></label>
+                    </div>
+                </td>
+            </tr>
+            <tr id="tonation-style">
+                <td><label>Styl oznaczenia tonacji</label></td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="tonation-style-bold" onclick="tonationStyleBold()" checked><span
+                            style="font-weight: bold">pogrubienie</span></label>
+                    </div>
+                </td>
+                <td>
+                    <div class="toggle-button"><label><input type="checkbox" id="tonation-style-italic" onclick="tonationStyleItalic()" checked><span
+                            style="font-style: italic">kursywa</span></label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <fieldset id="chord-settings">
+        <legend>Ustawienia akordów</legend>
+        <div style="color: red">
+            Uwaga, poniższe ustawienia nadpiszą ustawienia w poszczególnych piosenkach, tzn. jeśli w jakiejś piosence
+            żadne opcje nie były zaznaczone, a tu zaznaczymy, to te ustawienia zostaną nadpisane (jeżeli w jakiejś piosence zaznaczyliśmy jakąś opcję,
+            a tu zostawimy odznaczoną, to nie ma to wpływu). Warto więc zaznaczać te opcje przy piosenkach, a tu pozostawić odznaczone,
+            chyba, że celowo chcemy nadpisać ustawienia dla wszystkich piosenek.
+        </div>
+        <fieldset id="chord-options" style="margin-bottom: 10px">
+            <legend>Gotowe presety:</legend>
+            <div><input class="chord-option" name="chord-option" id="preset-beginner" type="radio"
+                        onclick="presetBeginner()"><label for="preset-beginner"> Początkujący</label></div>
+            <div><input class="chord-option" name="chord-option" id="preset-intermediate" type="radio"
+                        onclick="presetIntermediate()"><label for="preset-intermediate"> Średniozaawansowany</label>
+            </div>
+            <div><input class="chord-option" name="chord-option" id="preset-advanced" type="radio"
+                        onclick="presetAdvanced()"><label for="preset-advanced"> Zaawansowany</label></div>
+        </fieldset>
+        <div><input class="chord-option" id="hide-uncommon-added-interval" type="checkbox"
+                    onclick="hideUncommonAddedInterval()"><span style="color: green;"
+                                                                title="Wspierane w wersji online i w generatorze">&#x2713;</span>
+            Ukryj niestandardowe składniki (<sup>6&gt;</sup>, <sup>2&gt;</sup>, <sup>4&lt;</sup>, <sup>9(&gt;)</sup>)
+            (<b>A<sup>6></sup>/A<sup>9&gt;</sup> → A</b>)
+        </div>
+        <div><input class="chord-option" id="aug-and-dim-guitar-mode" type="checkbox"
+                    onclick="augAndDimGuitarMode()"><span style="color: green;"
+                                                          title="Wspierane w wersji online i w generatorze">&#x2713;</span>
+            Augmentacje i diminucje w notacji gitarowej (<b>A<sup>7&lt;</sup> e<sup>6&gt;</sup> → A<sup>7+</sup>
+                e<sup>6-</sup></b>)
+        </div>
+        <div><input class="chord-option" id="divide-delays" type="checkbox" onclick="divideDelays()"><span
+                style="color: orange;" title="Wspierane tylko w generatorze">&#x26A0;</span> Rozdziel opóźnienia na
+            osobne akordy (<b>A<sup>4-3</sup> → A<sup>4</sup> A</b>)
+        </div>
+        <div><input class="chord-option" id="hide-incomplete-chords" type="checkbox"
+                    onclick="hideIncompleteChords()"><span style="color: green;"
+                                                           title="Wspierane w wersji online i w generatorze">&#x2713;</span>
+            Ukryj puste kwinty i unison (<b>A<sup>1</sup>/A<sup>5</sup> → A</b>)
+        </div>
+        <div><input class="chord-option" id="simplify-multiply" type="checkbox" onclick="simplifyMultiply()"><span
+                style="color: green;" title="Wspierane w wersji online i w generatorze">&#x2713;</span> Wyświetl
+            max. 1 dodany składnik (<b>E<sup>64</sup> → E<sup>4</sup></b>)
+        </div>
+        <div><input class="chord-option" id="simplify-aug-to-guitar" type="checkbox"
+                    onclick="simplifyAugToGuitar()"><span style="color: green;"
+                                                          title="Wspierane w wersji online i w generatorze">&#x2713;</span>
+            Akordy zmniejszone w notacji gitarowej, ukryj zwiększone (<b>e> → e<sup>0</sup></b>)
+        </div>
+        <div><input class="chord-option" id="hide-base" type="checkbox" onclick="hideBase()"><span
+                style="color: green;" title="Wspierane w wersji online i w generatorze">&#x2713;</span> Ukryj
+            składniki w basie (<b>A<sub>3</sub> → A</b>)
+        </div>
+        <div><input class="chord-option" id="hide-alternative-key-flag" type="checkbox"
+                    onclick="hideAlternativeKey()"><span style="color: green;"
+                                                         title="Wspierane w wersji online i w generatorze">&#x2713;</span>
+            Ukryj alternatywne tonacje
+        </div>
+        <div><input class="chord-option" id="hide-key-mark-flag" type="checkbox" onclick="hideKeyMark()"><span
+                style="color: green;" title="Wspierane w wersji online i w generatorze">&#x2713;</span> Ukryj
+            oznaczenie tonacji <b><i>(A→B)</i></b></div>
+    </fieldset>
+</form>
+
+<div id="song">
+    <table style="padding: 0 0 0 0">
+        <tr>
+            <div id="author" class="author">sł. Michał Makoś<br/>muz. Gall Anonim</div>
+            <td id="song-text" style="padding-right: 0.5cm"><span>Przykładowa to piosenka<br/></span>
+                <span>Żeby dobyć trochę dźwięka<br/></span>
+                <span>Bo bez tego każdy stęka<br/></span>
+                <span>A dla ludu to jest męka<br/></span>
+            </td>
+            <td id="repetition" style="font-weight: bold; padding-right: 0.5cm">
+                <span><br/></span>
+                <span><br/></span>
+                <span>|<br/></span>
+                <span>|x2<br/></span>
+            </td>
+            <td class="chords" style="padding-right: 0.5cm">
+                <span id="tonation"><i><b>(B</b></i><b>→</b><i><b>A)</b></i></span><span> <b class="chord">e</b><sup><b class="chord">6></b></sup> <b class="chord">C</b><sup><b class="chord">7<</b></sup> <b class="chord">D<sup>9</sup> E</b><sup><b class="chord">4-3</b></sup><br/></span>
+                <span><b class="chord">E<sup>1</sup> A<sup>5</sup></b><br/></span>
+                <span><b class="chord">H</b><sup><b class="chord">64</b></sup> <b class="chord">H</b><br/></span>
+                <span><b class="chord">c> A<sub>3</sub><sup>7</sup></b><br/></span>
+            </td>
+            <td class="chords" style="padding-right: 0.5cm">
+                <span><b class="chord">a</b></span><span><sup><b class="chord">6></b></sup> <b class="chord">F</b><sup><b class="chord">7<</b></sup> <b class="chord">G<sup>9</sup> A</b><sup><b class="chord">4-3</b></sup><br/></span>
+                <span><b class="chord">A<sup>1</sup> D<sup>5</sup></b><br/></span>
+                <span><b class="chord">E</b><sup><b class="chord">64</b></sup> <b class="chord">E</b><br/></span>
+                <span><b class="chord">f> D<sub>3</sub><sup>7</sup></b><br/></span>
+            </td>
+        </tr>
+    </table>
+</div>

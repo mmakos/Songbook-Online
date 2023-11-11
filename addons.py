@@ -63,7 +63,7 @@ def __get_history_html(pars) -> str:
             if re.match(r"[0-9]+\.[0-9]+\.?[0-9]*", run.text) or "Poprawion" in text:
                 html += "<br>"
             html += __get_text_href(text, ids)
-            if not re.match(r"[0-9]+", run.text.strip()):
+            if not re.match(r"[0-9]+$", run.text.strip()):
                 html += "<br>"
             if re.match(r"[0-9]+\.[0-9]+\.?[0-9]*", run.text):
                 html += "<br>"
